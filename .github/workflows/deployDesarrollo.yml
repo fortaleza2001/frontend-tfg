@@ -29,10 +29,10 @@ jobs:
             git pull origin desarrollo 
             npm install
 
-            echo " Deteniendo cualquier proceso en el puerto 81..."
-            fuser -k 81/tcp || true
-            echo " Iniciando Front  en el puerto 81..."
-            nohup ng serve --port 81 --host 0.0.0.0 --disable-host-check > /dev/null 2>&1 &
+            echo " Deteniendo cualquier proceso en el puerto 80..."
+            fuser -k 80/tcp || true
+            echo " Iniciando Front  en el puerto 80..."
+            nohup ng serve --port 80 --host 0.0.0.0 --disable-host-check > /dev/null 2>&1 &
             echo "✅ Despliegue completado."
             exit
           EOF
