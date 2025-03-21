@@ -1,0 +1,38 @@
+name: Deploy to AWS desarrollo Frontent
+
+on:
+  push:
+    branches:
+      - desarrollo  
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup SSH Key
+        run: |
+          printf "%s" "${{ secrets.AWS_SSH_KEY }}" > aws_key.pem
+          chmod 600 aws_key.pem
+
+          
+
+      - name: Connect to EC2 and Pull Changes
+        run: |
+          ssh -o StrictHostKeyChecking=no -i aws_key.pem juan@ec2-3-228-202-70.compute-1.amazonaws.com << 'EOF'
+            cd /home/juan/front/desarrollo/frontend-tfg
+            git checkout desarrollo
+            git reset --hard HEAD
+            git pull origin desarrollo 
+            npm install
+
+            echo " Deteniendo cualquier proceso en el puerto 81..."
+            fuser -k 81/tcp || true
+            echo " Iniciando Front  en el puerto 81..."
+            nohup ng serve --port 81 --host 0.0.0.0 --disable-host-check > /dev/null 2>&1 &
+            echo "✅ Despliegue completado."
+            exit
+          EOF

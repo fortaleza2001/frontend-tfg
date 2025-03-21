@@ -1,0 +1,42 @@
+name: Deploy to AWS produccion
+
+on:
+  push:
+    branches:
+      - produccion  
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup SSH Key
+        run: |
+          printf "%s" "${{ secrets.AWS_SSH_KEY }}" > aws_key.pem
+          chmod 600 aws_key.pem
+
+          
+
+      - name: Connect to EC2 and Pull Changes
+        run: |
+          ssh -o StrictHostKeyChecking=no -i aws_key.pem juan@ec2-3-228-202-70.compute-1.amazonaws.com << 'EOF'
+            cd /home/juan/produccion/backend-tfg
+            git checkout produccion
+            git reset --hard HEAD
+            git pull origin produccion 
+            echo "Seteando variable de entorno de produccion ...."
+            echo "${{ secrets.LARAVEL_ENV_PRODUCCION }}" > /home/juan/produccion/backend-tfg/.env
+            composer update
+            composer install
+            php artisan migrate:refresh --seed
+            php artisan l5-swagger:generate
+            echo " Deteniendo cualquier proceso en el puerto 8001..."
+            fuser -k 8001/tcp || true
+            echo " Iniciando Laravel en el puerto 8001..."
+            nohup php artisan serve --host=0.0.0.0 --port=8001 > /dev/null 2>&1 &
+            echo "✅ Despliegue completado."
+            exit
+          EOF
