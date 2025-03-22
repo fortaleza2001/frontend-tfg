@@ -1,9 +1,11 @@
 import { Component } from '@angular/core';
-import { RouterOutlet, RouterLink,RouterLinkActive} from '@angular/router';
+import { RouterOutlet } from '@angular/router';
+
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  standalone: true,
+  imports: [RouterOutlet], // Agregar FormsModule aquí
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
