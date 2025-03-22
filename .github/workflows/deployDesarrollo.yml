@@ -32,7 +32,7 @@ jobs:
             echo " Deteniendo cualquier proceso en el puerto 80..."
             fuser -k 80/tcp || true
             echo " Iniciando Front  en el puerto 80..."
-            nohup ng serve --port 80 --host 0.0.0.0 --disable-host-check > /dev/null 2>&1 &
+            nohup ng serve --host 0.0.0.0 --port 4200 > /home/juan/front1.log 2>&1 &
             echo "✅ Despliegue completado."
             exit
           EOF
