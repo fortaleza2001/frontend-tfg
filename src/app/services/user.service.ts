@@ -20,5 +20,11 @@ export class UserService {
   }
  
 
+  loginUserGoogle(): Observable<any>{
+      
+      return this.http.get(`${this.apiUrl}/login/google`,  {
+        headers: { 'Content-Type': 'application/json' }
+      });
+  }
 
 }

@@ -35,4 +35,21 @@ export class LoginComponent {
       }
     });
   }
+
+
+  onLoginGoogle() {
+    
+    console.log("hola");
+
+    this.userService.loginUserGoogle().subscribe({
+      
+      next: (response) => {
+        console.log('Login exitoso:', response);
+      },
+      error: (error) => {
+        console.error('Error en el login:', error);
+        console.log( 'Error en el inicio de sesión. Verifique sus credenciales.');
+      }
+    });
+  }
 }
