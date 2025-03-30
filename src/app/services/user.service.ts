@@ -7,7 +7,7 @@ import { environment } from '../../environments/environment';  // Importar el ar
 })
 export class UserService {
   private $apiUrl = environment.apiUrl;
-  apiUrl: any;
+
 
 
   constructor(private http: HttpClient) {}
@@ -15,7 +15,7 @@ export class UserService {
   // Obtener todos los usuarios
   loginUser(email: string, password: string): Observable<any> {
     const body = { email, password };
-    return this.http.post(`${this.apiUrl}/login`, body, {
+    return this.http.post(`${this.$apiUrl}/login`, body, {
       headers: { 'Content-Type': 'application/json' }
     });
     
