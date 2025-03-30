@@ -1,14 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, } from 'rxjs';
+import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';  // Importar el archivo de entorno
+
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
-  private $apiUrl = environment.apiUrl;
-
-
+  private $apiUrl = environment.apiUrl;  // Uso consistente de $apiUrl
 
   constructor(private http: HttpClient) {}
 
@@ -18,15 +17,11 @@ export class UserService {
     return this.http.post(`${this.$apiUrl}/login`, body, {
       headers: { 'Content-Type': 'application/json' }
     });
-    
-  }
- 
-
-  loginUserGoogle(): Observable<any>{
-      
-      return this.http.get(`${this.apiUrl}/login/google`,  {
-        headers: { 'Content-Type': 'application/json' }
-      });
   }
 
+  loginUserGoogle(): Observable<any> {
+    return this.http.get(`${this.$apiUrl}/login/google`, {  // Cambio aquí también
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
 }
