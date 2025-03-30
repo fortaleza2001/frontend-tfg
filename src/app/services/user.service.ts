@@ -1,12 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, } from 'rxjs';
-
+import { environment } from '../../environments/environment';  // Importar el archivo de entorno
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
-  private apiUrl = 'https://api.mythical-airline.tech';
+  private $apiUrl = environment.apiUrl;
+  apiUrl: any;
+
 
   constructor(private http: HttpClient) {}
 

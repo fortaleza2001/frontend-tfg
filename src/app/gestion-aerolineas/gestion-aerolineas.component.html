@@ -1,0 +1,51 @@
+<div class="max-w-4xl mx-auto p-6 bg-gray-100 shadow-lg mt-6">
+    <!-- Contenedor para el botón "Volver atrás" en la parte superior -->
+    <div class="mb-6">
+      <button 
+      (click)="goBack()" 
+        class="bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded-md shadow-md">
+        Volver Atrás
+      </button>
+    </div>
+    
+    <h1 class="text-3xl font-bold text-center mb-6">Gestión de Aerolíneas</h1>
+    
+    <!-- Barra de búsqueda -->
+    <div class="mb-6 flex justify-center">
+      <input 
+        type="text" 
+        [(ngModel)]="searchQuery" 
+        (input)="searchAirlines()" 
+        placeholder="Buscar por nombre" 
+        class="w-full sm:w-3/4 md:w-1/2 p-2 border rounded-md border-gray-300 shadow-md"
+      />
+    </div>
+    
+    <!-- Botón de "Crear Aerolínea" centrado -->
+    <div class="flex justify-center mb-6">
+      <button 
+        (click)="createAirline()" 
+        class="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-md shadow-md w-full sm:w-auto">
+        Crear Aerolínea
+      </button>
+    </div>
+    
+    <!-- Lista de aerolíneas -->
+    <div class="space-y-4">
+      <div *ngFor="let airline of filteredAirlines" class="bg-white shadow-md rounded-md p-4 flex flex-col sm:flex-row items-center justify-between">
+        <div class="flex items-center space-x-4 mb-4 sm:mb-0">
+          <img [src]="airline.image" alt="Airline Image" class="w-16 h-16 object-cover rounded-md" />
+          <h2 class="text-xl font-semibold">{{ airline.name }}</h2>
+        </div>
+        <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto sm:justify-end">
+          <button (click)="modifyAirline(airline.id)" class="bg-yellow-500 hover:bg-yellow-600 text-white py-2 px-4 rounded-md shadow-md mb-2 sm:mb-0 w-full sm:w-auto">
+            Modificar
+          </button>
+          <button (click)="administerAirline(airline.id)" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md shadow-md w-full sm:w-auto">
+            Administrar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  

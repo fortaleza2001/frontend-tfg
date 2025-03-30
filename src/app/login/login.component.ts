@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { UserService } from '../services/user.service';
 import { FormsModule } from '@angular/forms';
-
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -14,7 +14,7 @@ export class LoginComponent {
   password: string = '';
 
 
-  constructor(private userService: UserService) {}
+  constructor(private userService: UserService,private router: Router) {}
 
   onLogin() {
     if (!this.email || !this.password) {
@@ -28,6 +28,7 @@ export class LoginComponent {
       
       next: (response) => {
         console.log('Login exitoso:', response);
+        this.router.navigate(['/home']);
       },
       error: (error) => {
         console.error('Error en el login:', error);

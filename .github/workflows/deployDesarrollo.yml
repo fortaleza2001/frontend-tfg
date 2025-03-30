@@ -27,6 +27,7 @@ jobs:
             git checkout desarrollo
             git reset --hard HEAD
             git pull origin desarrollo 
+            sed -i 's|http://localhost:8000|https://api.mythical-airline.tech|g' src/environments/environment.ts
             npm install
             ng build 
             echo "✅ Despliegue completado."
