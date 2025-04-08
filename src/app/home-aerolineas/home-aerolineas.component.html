@@ -4,26 +4,49 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Aerolínea</title>
-
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="min-h-screen bg-gray-100 flex flex-col items-center  p-6">
-  <!-- Encabezado -->
-  <header class="w-full bg-blue-600 text-white text-center py-6 shadow-lg">
-    <h1 class="text-4xl font-bold">Bienvenido a Nuestra Aerolínea</h1>
+<body class="min-h-screen bg-cover bg-center flex flex-col items-center p-6 relative" 
+      style="background-image: url('https://dynamic-media-cdn.tripadvisor.com/media/photo-o/0e/cd/51/9c/china-airlines.jpg?w=1200&h=-1&s=1');">
+
+  <!-- Filtro de desenfoque en el fondo -->
+  <div class="absolute inset-0 bg-black bg-opacity-10 backdrop-blur-md"></div>
+
+
+
+  <!-- Encabezado con degradado -->
+  <header class="w-full bg-gradient-to-r from-blue-600 to-indigo-700 text-white text-center py-6 shadow-lg relative z-10 mt-2">
+    <h1 class="text-4xl font-bold">Bienvenido a Aerolínea Ejemplo</h1>
     <p class="text-lg mt-2">Tu viaje comienza aquí</p>
   </header>
 
+ <!-- Botón Volver al Home mejorado -->
+ <div class="w-full flex justify-center mt-6">
+  <button class="flex items-center gap-2 bg-white bg-opacity-80 text-gray-800 px-5 py-3 rounded-full text-lg font-semibold shadow-md hover:bg-gray-200 transition-transform transform hover:scale-105">
+    ⬅ Volver al Home
+  </button>
+</div>
   <!-- Contenedor principal -->
-  <div class="bg-white shadow-xl rounded-lg p-8 mt-8 max-w-2xl w-full text-center">
+  <div class="bg-white bg-opacity-90 shadow-xl rounded-lg p-8 mt-8 max-w-2xl w-full text-center relative z-10">
     <h2 class="text-2xl font-semibold text-gray-800">Gestión de la Aerolínea</h2>
     <p class="text-gray-600 mt-2">Administra vuelos, aerolíneas y facturas desde un solo lugar.</p>
 
-    <!-- Botones de gestión -->
+    <!-- Botones de gestión con efectos -->
     <div class="mt-6 space-y-4">
-      <a href="/gestion-vuelos" class="block w-full py-3 px-6 bg-blue-600 text-white rounded-lg text-lg font-semibold hover:bg-blue-700">Gestión de Vuelos</a>
-      <a href="/gestion-aerolinea" class="block w-full py-3 px-6 bg-blue-600 text-white rounded-lg text-lg font-semibold hover:bg-blue-700">Gestión de Aerolínea</a>
-      <a href="/gestion-facturas" class="block w-full py-3 px-6 bg-blue-600 text-white rounded-lg text-lg font-semibold hover:bg-blue-700">Gestión de Facturas</a>
+      <a href="/gestion-vuelos" 
+         class="block w-full py-3 px-6 bg-blue-600 text-white rounded-lg text-lg font-semibold hover:bg-blue-700 transition-transform transform hover:scale-105 shadow-md">
+        Gestión de Vuelos
+      </a>
+      <a href="/gestion-aerolinea" 
+         class="block w-full py-3 px-6 bg-blue-600 text-white rounded-lg text-lg font-semibold hover:bg-blue-700 transition-transform transform hover:scale-105 shadow-md">
+        Gestión de Aerolínea Perfil
+      </a>
+      <a href="/gestion-facturas" 
+         class="block w-full py-3 px-6 bg-blue-600 text-white rounded-lg text-lg font-semibold hover:bg-blue-700 transition-transform transform hover:scale-105 shadow-md">
+        Gestión de Facturas
+      </a>
     </div>
   </div>
+
 </body>
 </html>

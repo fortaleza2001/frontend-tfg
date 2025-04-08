@@ -2,42 +2,60 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CookieService } from 'ngx-cookie-service';
 import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { UserService } from '../services/user.service';
+
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css']
+  styleUrls: ['./home.component.css'],
+  imports: [CommonModule]
 })
 export class HomeComponent implements OnInit {
-  
-  constructor(private http: HttpClient, private cookieService: CookieService,private router: Router) { }
+  isLoggedIn: boolean = false; // Cambia este valor según el estado de autenticación
+  username: string = '';
+  isLoading: boolean = true; // Controla el estado de carga
+
+  constructor(
+    private http: HttpClient, 
+    private cookieService: CookieService,
+    private router: Router,
+    private userService: UserService
+  ) {}
 
   ngOnInit(): void {
-    // Comprobamos si la cookie auth-token existe
-    const authToken = this.cookieService.get('auth-token');
-    
-    if (authToken) {
-      // Si la cookie existe, hacemos una llamada HTTP para comprobarla
-      this.verifyAuthToken(authToken);
-    } else {
-      console.log('No auth-token found');
-      // Aquí puedes redirigir a la página de login o mostrar un mensaje
-    }
-  }
-
-  // Método para verificar el token
-  verifyAuthToken(token: string): void {
-    const url = 'http://api.example.com/verify-token'; // Cambia esta URL a la de tu API
-    const headers = { 'Authorization': `Bearer ${token}` };
-    
-    this.http.get(url, { headers }).subscribe(
+    // Comprobamos si el usuario está autenticado
+    this.userService.checkAuthentication().subscribe(
       (response) => {
-        console.log('Token validado correctamente', response);
-        this.router.navigate(['/home']);
+        if (response.user) { // Si hay un usuario en la respuesta, el usuario está autenticado
+          this.isLoggedIn = true;
+          this.username = response.user.email; // Puedes cambiar esto dependiendo de la estructura del usuario
+          console.log('Usuario autenticado:', response.user);
+        } else {
+          this.isLoggedIn = false;
+          console.log('Usuario no autenticado');
+        }
+        this.isLoading = false; // Terminamos la carga
       },
       (error) => {
-        console.error('Error al verificar el token', error);
-        // Aquí puedes manejar lo que pasa si el token es inválido
+        console.error('Error al comprobar la autenticación', error);
+        this.isLoggedIn = false; // Si hay un error, asumimos que el usuario no está autenticado
+        this.isLoading = false; // Terminamos la carga
+      }
+    );
+
+    
+  }
+  logout(): void {
+    this.userService.logout().subscribe(
+      (response) => {
+        console.log('Logout respuesta:', response);  // Muestra la respuesta en la consola
+        window.location.reload();
+      },
+      (error) => {
+        console.error('Error al realizar el logout', error);  // Maneja cualquier error
       }
     );
   }
+  
 }

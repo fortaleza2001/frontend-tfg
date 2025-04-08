@@ -30,16 +30,15 @@
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      
     }
     .filter-container {
-  margin-top: 30px;
-  margin-bottom: 30px; /* Agrega espacio debajo del filtro */
-  padding: 20px;
-  background-color: #f9f9f9;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
+      margin-top: 30px;
+      margin-bottom: 30px;
+      padding: 20px;
+      background-color: #f9f9f9;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
     .hero-section {
       position: relative;
       width: 100%;
@@ -62,33 +61,38 @@
   </style>
 </head>
 <body>
-  <nav class="navbar navbar-expand-lg bg-light shadow-sm">
+  <nav class="navbar navbar-expand-lg bg-light shadow-sm" *ngIf="!isLoading">
     <div class="container-fluid">
       <!-- Icono a la izquierda -->
       <a class="navbar-brand" href="#">
         <img src="https://cdn-icons-png.flaticon.com/512/25/25694.png" alt="icono" width="30" height="30" class="d-inline-block align-top" />
         Home juan
       </a>
-      
+
       <!-- Botones a la derecha -->
       <div class="d-flex">
-        <a href="#" class="btn btn-outline-primary me-2">Iniciar Sesión</a>
-        <a href="#" class="btn btn-primary">Registrarse</a>
+        <!-- Si no está logueado -->
+        <a *ngIf="!isLoggedIn" href="#" class="btn btn-outline-primary me-2">Iniciar Sesión</a>
+        <a *ngIf="!isLoggedIn" href="#" class="btn btn-primary">Registrarse</a>
+
+        <!-- Si está logueado -->
+        <p *ngIf="isLoggedIn">{{username}}</p>
+        <a *ngIf="isLoggedIn" href="#" class="btn btn-outline-primary me-2">Mi perfil</a>
+        <a *ngIf="isLoggedIn" (click)="logout()" class="btn btn-danger">Cerrar Sesión</a>
       </div>
     </div>
   </nav>
 
   <!-- Barra de botones -->
-  <div class="d-flex justify-content-center mt-3 button-container">
+  <div class="d-flex justify-content-center mt-3 button-container" *ngIf="!isLoading">
     <button class="nav-btn">Reserva</button>
     <button class="nav-btn">Aerolíneas</button>
     <button class="nav-btn">Promociones</button>
     <button class="nav-btn">Soporte</button>
   </div>
 
-
-   <!-- Zona de filtro de búsqueda -->
-   <div class="container filter-container">
+  <!-- Zona de filtro de búsqueda -->
+  <div class="container filter-container" *ngIf="!isLoading">
     <h4>Filtro de Búsqueda</h4>
     <form>
       <div class="row g-3">
@@ -120,11 +124,16 @@
   </div>
 
   <!-- Imagen con texto superpuesto -->
-  <div class="hero-section">
+  <div class="hero-section" *ngIf="!isLoading">
     <div class="hero-text">Descubra las mejores ofertas</div>
   </div>
 
- 
+  <!-- Spinner de carga -->
+  <div *ngIf="isLoading" class="d-flex justify-content-center mt-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+  </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
