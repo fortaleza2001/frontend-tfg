@@ -15,10 +15,6 @@ export class UserService {
   loginUser(email: string, password: string): Observable<any> {
     const body = { email, password };
     
-    // Realizamos una llamada a /sanctum/csrf-cookie para obtener el token CSRF antes del login
-    return this.http.get(`${this.$apiUrl}/sanctum/csrf-cookie`, { withCredentials: true }).pipe(
-      switchMap(() => {
-        // Ahora que el token CSRF está disponible en las cookies, podemos hacer el login
         return this.http.post(`${this.$apiUrl}/login`, body, {
           headers: { 
             'Content-Type': 'application/json',
@@ -26,8 +22,33 @@ export class UserService {
           },
           withCredentials: true // Aseguramos que se envíen las cookies con la solicitud
         });
-      })
-    );
+  
+  }
+
+  loginwithGithub()
+  {
+    window.location.href = `${this.$apiUrl}/auth/github`;
+  }
+  loginwithGoogle()
+  {
+    window.location.href = `${this.$apiUrl}/auth/google`;
+  }
+  loginwithFacebook()
+  {
+    window.location.href = `${this.$apiUrl}/auth/facebook`;
+  }
+
+  registerUser(email: string, password: string): Observable<any> {
+    const body = { email, password };
+
+        return this.http.post(`${this.$apiUrl}/registro`, body, {
+          headers: { 
+            'Content-Type': 'application/json',
+        
+          },
+          withCredentials: true // Aseguramos que se envíen las cookies con la solicitud
+        });
+  
   }
 
   checkAuthentication(): Observable<any> {

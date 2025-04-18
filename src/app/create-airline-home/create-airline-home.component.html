@@ -1,0 +1,143 @@
+<div *ngIf="!datosCargados" class="fixed inset-0 bg-white bg-opacity-80 flex flex-col items-center justify-center z-50">
+    <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500 border-solid"></div>
+    <p class="mt-4 text-gray-700 text-lg font-semibold">Cargando datos...</p>
+  </div>
+  
+  <div *ngIf="error" class="flex flex-col items-center justify-center min-h-screen text-center px-4">
+    <h1 class="text-3xl font-bold text-red-600 mb-4">Error del servidor</h1>
+    <p class="text-lg text-gray-600 mb-6">Ha ocurrido un problema al cargar la información. Por favor, vuelva más tarde.</p>
+    <button 
+      class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-300"
+      (click)="volverAlHome()"
+    >
+      Volver al inicio
+    </button>
+  </div>
+  
+
+<div *ngIf="!error" class="min-h-screen flex flex-col items-center justify-between bg-gray-100 p-6">
+    <h1 class="text-3xl font-bold text-gray-800 mb-6">Crear Nueva Aerolínea</h1>
+    <!-- Alerta de éxito -->
+<div *ngIf="successMessage" class="w-full max-w-3xl mb-4">
+  <div class="flex items-center bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg shadow-md" role="alert">
+    <svg class="w-6 h-6 mr-2 fill-current text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+      <path d="M10 15l-5.5-5.5L6.91 8.09 10 11.17l7.09-7.08L18.5 5.5z"/>
+    </svg>
+    <span class="text-md font-medium">{{ successMessage }}</span>
+  </div>
+</div>
+
+  
+    <p class="text-gray-600 text-center max-w-xl mb-6">
+      En esta sección puedes registrar una nueva aerolínea proporcionando su nombre, país de origen, código IATA, y otros datos importantes.
+      Este proceso permitirá que la aerolínea esté disponible en nuestro sistema para gestión de vuelos, reservas y más.
+    </p>
+  
+    <div class="flex gap-4 mb-8">
+      <button (click)="ircrearAerolinea()" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">
+        Crear Aerolínea
+      </button>
+  
+      <button (click)="volverAlHome()" class="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition">
+        Volver al Home
+    </button>
+    </div>
+  
+    <!-- Sección de búsqueda -->
+    <div class="w-full max-w-4xl shadow-lg bg-white rounded-lg p-6 mb-8">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-semibold text-gray-700">Buscar Aerolíneas</h2>
+        <input
+          [(ngModel)]="searchTerm"
+          type="text"
+          placeholder="Buscar por nombre, país o código IATA"
+          class="p-2 border border-gray-300 rounded-lg w-full sm:w-5/6 lg:w-5/6 xl:w-5/6 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+    </div>
+  
+    <!-- Tabla de aerolíneas con scroll -->
+    <div class="w-full max-w-4xl shadow-lg bg-white rounded-lg p-6">
+      <div class="mb-4">
+        <h2 class="text-xl font-semibold text-gray-700">Lista de Aerolíneas (Total: {{ filteredAirlines.length }})</h2>
+      </div>
+      <div class="overflow-x-auto" style="max-height: 300px;">
+        <table class="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
+          <thead class="bg-gray-200 text-gray-700">
+            <tr>
+              <th class="py-3 px-4 text-left">Nombre</th>
+              <th class="py-3 px-4 text-left">País</th>
+              <th class="py-3 px-4 text-left">Código IATA</th>
+              <th class="py-3 px-4 text-left">Verificado</th> 
+              <th class="py-3 px-4 text-left">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let airline of filteredAirlines " class="border-t hover:bg-gray-100">
+              <td class="py-2 px-4">{{ airline.nombre }}</td>
+              <td class="py-2 px-4">{{ airline.pais }}</td>
+              <td class="py-2 px-4">{{ airline.codigoIATA }}</td>
+              <td class="py-2 px-4">{{ airline.verificado }}</td>
+              <td class="py-2 px-4">
+                <button  [disabled]="airline.verificado=='⏳ En proceso'" (click)="irAerolinea(airline.id)"
+                class="bg-yellow-600 text-white px-4 py-2 rounded-lg 
+                transition 
+                hover:bg-yellow-700 
+                disabled:opacity-50 
+                disabled:cursor-not-allowed">
+                  Administrar Aerolínea
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  
+    <!-- Sección de información -->
+    <div class="w-full max-w-4xl shadow-lg bg-white rounded-lg p-6 mt-8">
+      <div class="text-center text-gray-700">
+        <h2 class="text-xl font-semibold mb-2">Crea tu Aerolínea Web</h2>
+
+        <p class="text-gray-600">
+          Sin tener que crear tu sitio web. Administra desde <span class="font-bold">Mythical Airline</span> todos tus vuelos, billetes y clientes.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <footer class="w-full bg-gray-800 text-white py-6 mt-auto">
+    <div class="max-w-7xl mx-auto px-6 flex flex-col items-center md:flex-row justify-between">
+      <!-- Sección de enlaces -->
+      <div class="mb-4 md:mb-0">
+        <h3 class="text-lg font-semibold">Mythical Airline</h3>
+        <p class="text-gray-400 text-sm">Tu aerolínea gestionada desde la web.</p>
+      </div>
+
+      <!-- Enlaces rápidos -->
+      <div class="flex flex-col md:flex-row gap-4">
+        <a href="/" class="text-gray-300 hover:text-white text-sm">Inicio</a>
+        <a href="#" class="text-gray-300 hover:text-white text-sm">Sobre nosotros</a>
+        <a href="#" class="text-gray-300 hover:text-white text-sm">Servicios</a>
+        <a href="#" class="text-gray-300 hover:text-white text-sm">Contacto</a>
+      </div>
+
+      <!-- Información de redes sociales -->
+      <div class="flex gap-4 mt-4 md:mt-0">
+        <a href="#" class="text-gray-300 hover:text-white">
+          <i class="fab fa-facebook-f"></i> <!-- Ícono de Facebook -->
+        </a>
+        <a href="#" class="text-gray-300 hover:text-white">
+          <i class="fab fa-twitter"></i> <!-- Ícono de Twitter -->
+        </a>
+        <a href="#" class="text-gray-300 hover:text-white">
+          <i class="fab fa-instagram"></i> <!-- Ícono de Instagram -->
+        </a>
+      </div>
+    </div>
+
+    <div class="text-center mt-6 text-sm text-gray-400">
+      <p>&copy; 2025 Mythical Airline. Todos los derechos reservados.</p>
+    </div>
+  </footer>
+  

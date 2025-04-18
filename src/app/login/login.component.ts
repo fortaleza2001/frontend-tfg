@@ -37,5 +37,14 @@ export class LoginComponent {
     });
   }
 
+  onLoginGithub() {
+    this.userService.loginwithGithub();
+  }
+  onLoginGoogle(){
+    this.userService.loginwithGoogle();
+  }
+  onLoginFacebook(){
+    this.userService.loginwithFacebook();
+  }
 
 }

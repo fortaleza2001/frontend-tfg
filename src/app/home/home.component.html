@@ -3,138 +3,134 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Navbar con Bootstrap</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+  <title>Navbar con Tailwind</title>
+  <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    .nav-btn {
-      border: none;
-      background-color: #007bff;
-      color: white;
-      font-size: 16px;
-      padding: 12px 24px;
-      margin: 10px;
-      border-radius: 30px;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 8px rgba(0, 123, 255, 0.2);
-    }
-    .nav-btn:hover {
-      background-color: #0056b3;
-      transform: translateY(-3px);
-      box-shadow: 0 8px 16px rgba(0, 86, 179, 0.3);
-    }
-    .button-container {
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      border-radius: 20px;
-      padding: 20px;
-      background-color: #fff;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-    .filter-container {
-      margin-top: 30px;
-      margin-bottom: 30px;
-      padding: 20px;
-      background-color: #f9f9f9;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    }
+    /* Hero section background */
     .hero-section {
-      position: relative;
-      width: 100%;
+      background-image: url('https://media.revistagq.com/photos/5ed5285ef95b900ced636e6d/16:9/w_1920,c_limit/GettyImages-619394704.jpg');
+      background-position: center;
+      background-size: cover;
       height: 400px;
-      background: url('https://media.revistagq.com/photos/5ed5285ef95b900ced636e6d/16:9/w_1920,c_limit/GettyImages-619394704.jpg') no-repeat center top/cover;
-    }
-    .hero-text {
-      position: absolute;
-      top: 50%;
-      left: 70%;
-      transform: translate(-50%, -50%);
-      background-color: rgba(0, 0, 0, 1);
-      color: white;
-      padding: 20px 40px;
-      border-radius: 12px;
-      font-size: 32px;
-      font-weight: bold;
-      text-align: center;
+      position: relative;
     }
   </style>
 </head>
-<body>
-  <nav class="navbar navbar-expand-lg bg-light shadow-sm" *ngIf="!isLoading">
-    <div class="container-fluid">
-      <!-- Icono a la izquierda -->
-      <a class="navbar-brand" href="#">
-        <img src="https://cdn-icons-png.flaticon.com/512/25/25694.png" alt="icono" width="30" height="30" class="d-inline-block align-top" />
-        Home juan
-      </a>
+<body class="font-sans bg-gray-100">
 
-      <!-- Botones a la derecha -->
-      <div class="d-flex">
-        <!-- Si no está logueado -->
-        <a *ngIf="!isLoggedIn" href="#" class="btn btn-outline-primary me-2">Iniciar Sesión</a>
-        <a *ngIf="!isLoggedIn" href="#" class="btn btn-primary">Registrarse</a>
+<!-- Barra de navegación -->
+<nav class="bg-white shadow-md">
+  <div class="max-w-screen-xl mx-auto px-4 py-4 flex items-center justify-between">
+    
+    <!-- Logo -->
+    <a href="/" class="flex items-center space-x-2 text-xl font-semibold text-blue-600">
+      <img src="https://flowbite.com/docs/images/logo.svg" alt="Logo" class="h-8" />
+      <span>FlightApp</span>
+    </a>
 
-        <!-- Si está logueado -->
-        <p *ngIf="isLoggedIn">{{username}}</p>
-        <a *ngIf="isLoggedIn" href="#" class="btn btn-outline-primary me-2">Mi perfil</a>
-        <a *ngIf="isLoggedIn" (click)="logout()" class="btn btn-danger">Cerrar Sesión</a>
+    <!-- Menú de navegación -->
+    <div class="hidden md:flex space-x-6 justify-center flex-1">
+      <!-- Enlaces de páginas -->
+      <a href="/reserva" class="text-gray-800 hover:text-blue-600">Reserva</a>
+      <a href="/aerolineas" class="text-gray-800 hover:text-blue-600">Aerolíneas</a>
+      <a href="/promociones" class="text-gray-800 hover:text-blue-600">Promociones</a>
+      <a href="/soporte" class="text-gray-800 hover:text-blue-600">Soporte</a>
+    </div>
+
+    <!-- Botones de autenticación si el usuario no está logueado -->
+    <div *ngIf="!isLoggedIn" class="flex space-x-4" id="auth-buttons">
+      <a href="/login" class="text-blue-600 hover:bg-blue-100 px-4 py-2 rounded-md border border-blue-600">Iniciar sesión</a>
+      <a href="/registro" class="text-blue-600 hover:bg-blue-100 px-4 py-2 rounded-md border border-blue-600">Registrarse</a>
+    </div>
+
+    <div *ngIf="isLoggedIn" class="flex items-center justify-center space-x-4" id="user-info">
+      <div class="relative inline-block text-left">
+        <!-- Botón del usuario -->
+        <button (click)="toggleDropdown()" 
+            class="flex items-center space-x-2 bg-white text-blue-700 py-2 px-4 rounded-full hover:bg-gray-200 focus:outline-none">
+            <span>{{ username }}</span>
+            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+        </button>
+    
+        <!-- Menú desplegable -->
+        <div *ngIf="dropdownOpen" class="absolute right-0 mt-2 w-48 bg-white text-gray-800 rounded-lg shadow-lg z-50">
+          <button  class="w-full text-left block px-4 py-2 hover:bg-gray-200">
+            Perfil
+          </button>
+          
+          <button (click)="irAerolineas()"  class="w-full text-left block px-4 py-2 hover:bg-gray-200">
+            Aerolineas
+          </button>
+          
+          <button (click)="logout()" class="w-full text-left block px-4 py-2 hover:bg-gray-200">
+            Logout
+          </button>
+          
+        </div>
       </div>
     </div>
-  </nav>
+    
 
-  <!-- Barra de botones -->
-  <div class="d-flex justify-content-center mt-3 button-container" *ngIf="!isLoading">
-    <button class="nav-btn">Reserva</button>
-    <button class="nav-btn">Aerolíneas</button>
-    <button class="nav-btn">Promociones</button>
-    <button class="nav-btn">Soporte</button>
   </div>
+</nav>
+
+
 
   <!-- Zona de filtro de búsqueda -->
-  <div class="container filter-container" *ngIf="!isLoading">
-    <h4>Filtro de Búsqueda</h4>
+  <div class="container mx-auto mt-12 p-6 bg-white rounded-lg shadow-lg" id="filter-container">
+    <h4 class="text-xl font-semibold text-gray-700 mb-6">Filtro de Búsqueda</h4>
     <form>
-      <div class="row g-3">
-        <div class="col-md-6">
-          <label for="origen" class="form-label">Origen</label>
-          <input type="text" class="form-control" id="origen" placeholder="Ciudad de origen">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div>
+          <label for="origen" class="block text-gray-700">Origen</label>
+          <input type="text" id="origen" class="w-full mt-2 p-3 border border-gray-300 rounded-lg" placeholder="Ciudad de origen">
         </div>
-        <div class="col-md-6">
-          <label for="destino" class="form-label">Destino</label>
-          <input type="text" class="form-control" id="destino" placeholder="Ciudad de destino">
+        <div>
+          <label for="destino" class="block text-gray-700">Destino</label>
+          <input type="text" id="destino" class="w-full mt-2 p-3 border border-gray-300 rounded-lg" placeholder="Ciudad de destino">
         </div>
-        <div class="col-md-4">
-          <label for="fechaSalida" class="form-label">Fecha de Salida</label>
-          <input type="date" class="form-control" id="fechaSalida">
+        <div>
+          <label for="fechaSalida" class="block text-gray-700">Fecha de Salida</label>
+          <input type="date" id="fechaSalida" class="w-full mt-2 p-3 border border-gray-300 rounded-lg">
         </div>
-        <div class="col-md-4">
-          <label for="fechaRegreso" class="form-label">Fecha de Regreso</label>
-          <input type="date" class="form-control" id="fechaRegreso">
+        <div>
+          <label for="fechaRegreso" class="block text-gray-700">Fecha de Regreso</label>
+          <input type="date" id="fechaRegreso" class="w-full mt-2 p-3 border border-gray-300 rounded-lg">
         </div>
-        <div class="col-md-4">
-          <label for="pasajeros" class="form-label">Pasajeros</label>
-          <input type="number" class="form-control" id="pasajeros" min="1" value="1">
+        <div>
+          <label for="pasajeros" class="block text-gray-700">Pasajeros</label>
+          <input type="number" id="pasajeros" class="w-full mt-2 p-3 border border-gray-300 rounded-lg" min="1" value="1">
         </div>
-        <div class="col-12">
-          <button type="submit" class="btn btn-primary">Buscar</button>
+        <div class="col-span-full">
+          <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-500 transition duration-300">Buscar</button>
         </div>
       </div>
     </form>
   </div>
 
   <!-- Imagen con texto superpuesto -->
-  <div class="hero-section" *ngIf="!isLoading">
-    <div class="hero-text">Descubra las mejores ofertas</div>
-  </div>
-
-  <!-- Spinner de carga -->
-  <div *ngIf="isLoading" class="d-flex justify-content-center mt-5">
-    <div class="spinner-border text-primary" role="status">
-      <span class="visually-hidden">Cargando...</span>
+  <div class="hero-section relative mt-12">
+    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center text-white bg-black bg-opacity-60 px-6 py-4 rounded-lg">
+      <h2 class="text-3xl font-bold">Descubra las mejores ofertas</h2>
     </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Spinner de carga -->
+  <div id="spinner" class="flex justify-center items-center mt-12 hidden">
+    <div class="w-16 h-16 border-4 border-blue-500 border-t-transparent border-solid rounded-full animate-spin"></div>
+  </div>
+
+  <script>
+    // Simulación de estado de carga
+    document.addEventListener('DOMContentLoaded', () => {
+      const isLoading = false;
+      if (isLoading) {
+        document.getElementById('spinner').classList.remove('hidden');
+        document.getElementById('filter-container').classList.add('hidden');
+      }
+    });
+  </script>
 </body>
 </html>

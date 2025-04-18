@@ -79,15 +79,17 @@
       <!-- Botones de Redes Sociales -->
       <div class="social-login">
         <p class="text-center">O inicia sesión con</p>
-        <button class="btn btn-dark" onclick="loginWithProvider('GitHub')">
+        <button class="btn btn-dark" (click)="onLoginGithub()">
           <i class="bi bi-github"></i> Iniciar sesión con GitHub
         </button>
-        <button class="btn btn-danger" >
+        <button class="btn btn-danger" (click)="onLoginGoogle()">
           <i class="bi bi-google"></i> Iniciar sesión con Google
         </button>
-        <button class="btn btn-primary" onclick="loginWithProvider('Facebook')">
+        <!--
+        <button class="btn btn-primary" (click)="onLoginFacebook()">
           <i class="bi bi-facebook"></i> Iniciar sesión con Facebook
         </button>
+        -->
       </div>
     </div>
   </div>

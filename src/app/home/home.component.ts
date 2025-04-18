@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CookieService } from 'ngx-cookie-service';
 import { Router } from '@angular/router';
@@ -15,6 +15,7 @@ export class HomeComponent implements OnInit {
   isLoggedIn: boolean = false; // Cambia este valor según el estado de autenticación
   username: string = '';
   isLoading: boolean = true; // Controla el estado de carga
+  menuOpen = false;
 
   constructor(
     private http: HttpClient, 
@@ -22,40 +23,49 @@ export class HomeComponent implements OnInit {
     private router: Router,
     private userService: UserService
   ) {}
+  dropdownOpen = false;
+
+  toggleDropdown() {
+    this.dropdownOpen = !this.dropdownOpen;
+  }
 
   ngOnInit(): void {
-    // Comprobamos si el usuario está autenticado
     this.userService.checkAuthentication().subscribe(
       (response) => {
-        if (response.user) { // Si hay un usuario en la respuesta, el usuario está autenticado
+        if (response.user) {
           this.isLoggedIn = true;
-          this.username = response.user.email; // Puedes cambiar esto dependiendo de la estructura del usuario
+          this.username = response.user.email; // O usa otra propiedad del usuario que desees
           console.log('Usuario autenticado:', response.user);
         } else {
           this.isLoggedIn = false;
           console.log('Usuario no autenticado');
         }
-        this.isLoading = false; // Terminamos la carga
+        this.isLoading = false;
       },
       (error) => {
         console.error('Error al comprobar la autenticación', error);
-        this.isLoggedIn = false; // Si hay un error, asumimos que el usuario no está autenticado
-        this.isLoading = false; // Terminamos la carga
+        this.isLoggedIn = false;
+        this.isLoading = false;
       }
     );
-
-    
   }
+
   logout(): void {
     this.userService.logout().subscribe(
       (response) => {
-        console.log('Logout respuesta:', response);  // Muestra la respuesta en la consola
+        console.log('Logout respuesta:', response);
         window.location.reload();
       },
       (error) => {
-        console.error('Error al realizar el logout', error);  // Maneja cualquier error
+        console.error('Error al realizar el logout', error);
       }
     );
   }
-  
+
+  irAerolineas()
+  {
+    this.router.navigate(["/Aerolineas-home"]);
+  }
+
+
 }
