@@ -1,0 +1,360 @@
+<div class="flex items-center justify-center min-h-screen bg-gray-100">
+    <div class="max-w-4xl w-full bg-white p-8 rounded-lg shadow-lg space-y-6 relative">
+      <!-- Título principal -->
+
+      <!-- Botón Volver atrás -->
+      <div #errorContainer class="mb-6">
+        <button
+          type="button"
+          (click)="volverAtras()"
+          class="bg-gray-300 text-gray-800 px-6 py-2 rounded-lg hover:bg-gray-400 transition-all duration-300"
+        >
+          Volver Atrás
+        </button>
+      </div>
+      
+      <h1  class="text-4xl font-extrabold text-center text-gray-800 mb-8">
+        Crear nuevo vuelo
+      </h1>
+  
+      
+  
+      <!-- Encabezado de fases -->
+      <div class="flex justify-center items-center text-xl font-semibold text-gray-700 space-x-8">
+        <span
+          [ngClass]="{'cursor-pointer': true, 'text-blue-600': fase === 1, 'font-bold': fase === 1}"
+          class="fase-etapa"
+          
+        >Fase 1</span>
+        <span>/</span>
+        <span
+          [ngClass]="{'cursor-pointer': true, 'text-blue-600': fase === 2, 'font-bold': fase === 2}"
+          class="fase-etapa"
+         
+        >Fase 2</span>
+      
+      </div>
+  
+      <!-- Título dinámico -->
+      <h2 id="form-title" class="text-3xl font-extrabold text-center text-gray-800 mt-4">
+        {{ fase === 1 ? 'Información básica' : fase === 2 ? 'Datos de pago y protección de datos' : 'Detalles finales' }}
+      </h2>
+      <!-- Mensaje de error -->
+<div *ngIf="errorCreacion"#errorContainer class="text-red-600 font-medium text-center bg-red-100 border border-red-300 px-4 py-2 rounded">
+  {{ errorCreacion }}
+</div>
+
+  
+      <!-- Formulario -->
+      <form (ngSubmit)="crearVuelo()" class="space-y-6">
+        <!-- Paso 1: Información del creador -->
+        <div class="form-step" *ngIf="fase === 1">
+
+            <div class="space-y-8 mt-8">
+                <!-- Origen -->
+                <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-2xl transition-shadow duration-300">
+                  <h3 class="text-2xl font-semibold text-indigo-700 mb-4 border-b-2 border-indigo-300 pb-2">Origen</h3>
+                  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700">País de Origen</label>
+                      <input type="text" [(ngModel)]="vuelo.paisOrigen" name="paisOrigen" placeholder="Ej: España"
+                             class="mt-1 block w-full border border-gray-300 rounded-lg px-4 py-3 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-300"/>
+                    </div>
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700">Aeropuerto de Origen</label>
+                      <input type="text" [(ngModel)]="vuelo.aeropuesto_origen"name="aeropuesto_origen" placeholder="Ej: Madrid-Barajas"
+                             class="mt-1 block w-full border border-gray-300 rounded-lg px-4 py-3 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-300"/>
+                    </div>
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700">Terminal</label>
+                      <input type="text" [(ngModel)]="vuelo.terminal_origen" name="terminal_origen" placeholder="Ej: Terminal 4"
+                             class="mt-1 block w-full border border-gray-300 rounded-lg px-4 py-3 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-300"/>
+                    </div>
+                  </div>
+                </div>
+              
+                <!-- Destino -->
+                <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-2xl transition-shadow duration-300">
+                  <h3 class="text-2xl font-semibold text-indigo-700 mb-4 border-b-2 border-indigo-300 pb-2">Destino</h3>
+                  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700">País de Destino</label>
+                      <input type="text" [(ngModel)]="vuelo.pais_destino" name="pais_destino" placeholder="Ej: Francia"
+                             class="mt-1 block w-full border border-gray-300 rounded-lg px-4 py-3 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-300"/>
+                    </div>
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700">Aeropuerto de Destino</label>
+                      <input type="text" [(ngModel)]="vuelo.aeropuesto_destino"name="aeropuesto_destino" placeholder="Ej: Charles de Gaulle"
+                             class="mt-1 block w-full border border-gray-300 rounded-lg px-4 py-3 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-300"/>
+                    </div>
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700">Terminal</label>
+                      <input type="text" [(ngModel)]="vuelo.terminal_destino" name="terminal_destino" placeholder="Ej: Terminal 2E"
+                             class="mt-1 block w-full border border-gray-300 rounded-lg px-4 py-3 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-300"/>
+                    </div>
+                  </div>
+                </div>
+              
+                <!-- Fechas y vuelo -->
+                <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-2xl transition-shadow duration-300">
+                  <h3 class="text-2xl font-semibold text-indigo-700 mb-4 border-b-2 border-indigo-300 pb-2">Fechas</h3>
+                  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Fecha y Hora de Salida</label>
+                        <input type="datetime-local" [(ngModel)]="vuelo.fecha_salida" name="fecha_salida"
+                               class="mt-1 block w-full border border-gray-300 rounded-lg px-4 py-3 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-300"/>
+                      </div>
+                      <div>
+                        <label class="block text-sm font-medium text-gray-700" >Fecha y Hora de Llegada </label>
+                        <input type="datetime-local" [(ngModel)]="vuelo.fecha_destino" name="fecha_destino"
+                               class="mt-1 block w-full border border-gray-300 rounded-lg px-4 py-3 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-300"/>
+                      </div>
+                      
+                  </div>
+                </div>
+              
+                <!-- Tickets -->
+                <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-2xl transition-shadow duration-300">
+                  <h3 class="text-2xl font-semibold text-indigo-700 mb-4 border-b-2 border-indigo-300 pb-2">Tickets</h3>
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700">Máximo de Tickets a Vender</label>
+                      <input type="number" [(ngModel)]="vuelo.numero_tickets"name="numero_tickets" placeholder="Ej: 150"
+                             class="mt-1 block w-full border border-gray-300 rounded-lg px-4 py-3 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-300"/>
+                    </div>
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700">Máximo de Pasajeros</label>
+                      <input type="number" [(ngModel)]="vuelo.numero_pasajeros"name="numero_pasajeros" placeholder="Ej: 180"
+                             class="mt-1 block w-full border border-gray-300 rounded-lg px-4 py-3 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-300"/>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+        
+        
+        </div>
+        
+          
+
+        <div class="form-step" *ngIf="fase === 2">
+            
+            <!-- Modal (popup) -->
+            <div *ngIf="mostrarModal" class="fixed inset-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-50">
+                <div class="bg-white p-6 rounded-lg shadow-lg max-w-lg w-full">
+                    
+                    <!-- Cerrar modal -->
+                    <button 
+                        (click)="ocultarPopup()" 
+                        class="absolute top-2 right-2 text-gray-600 hover:text-gray-800">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+        
+                    <h3 class="text-2xl font-semibold mb-4">Crear Tipos de Tickets</h3>
+        
+                    <!-- Formulario para crear ticket -->
+                    <form (ngSubmit)="guardarTicket()" class="space-y-4">
+                        
+                        <!-- Campo Tipo de Ticket -->
+                        <div class="form-group">
+                            <label for="tipo" class="block text-sm font-medium text-gray-700">Tipo de Ticket:</label>
+                            <input 
+                                type="text" 
+                                id="tipo" 
+                                [(ngModel)]="nuevoTicket.tipo" 
+                                name="tipo" 
+                                placeholder="Económico, Business, etc."
+                                class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                                required
+                            />
+                        </div>
+        
+                        <!-- Campo Precio -->
+                        <div class="form-group">
+                            <label for="precio" class="block text-sm font-medium text-gray-700">Precio (€):</label>
+                            <input 
+                                type="number" 
+                                id="precio" 
+                                [(ngModel)]="nuevoTicket.precio" 
+                                name="precio" 
+                                placeholder="Precio del ticket"
+                                class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                                required
+                            />
+                        </div>
+        
+                        <!-- Campo Cantidad Disponible -->
+                        <div class="form-group">
+                            <label for="cantidadDisponible" class="block text-sm font-medium text-gray-700">Cantidad Disponible:</label>
+                            <input 
+                                type="number" 
+                                id="cantidadDisponible" 
+                                [(ngModel)]="nuevoTicket.cantidadDisponible" 
+                                name="cantidadDisponible" 
+                                placeholder="Cantidad de tickets disponibles"
+                                class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                                required
+                                [min]="0"
+                                [max]="ticketsDisponibles"
+                            />
+                            
+                            <!-- Mensaje de advertencia si se pasa del límite -->
+                            <div *ngIf="ticketsDisponibles <= 0" class="text-red-600 text-sm mt-1">
+                                No puedes asignar más tickets. Añade más en la fase 1 o reduce la cantidad en otros tipos de billete.
+                              </div>
+                              
+                              <div *ngIf="ticketsDisponibles > 0" class="text-red-600 text-sm mt-1">
+                                Solo puedes asignar {{ ticketsDisponibles }} tickets como máximo.
+                              </div>
+                              
+                            
+                        </div>
+        
+                        <!-- Campo Equipaje Incluido -->
+                        <div class="form-group">
+                            <label for="equipajeIncluidoKg" class="block text-sm font-medium text-gray-700">Equipaje Incluido (Kg):</label>
+                            <input 
+                                type="number" 
+                                id="equipajeIncluidoKg" 
+                                [(ngModel)]="nuevoTicket.equipajeIncluidoKg" 
+                                name="equipajeIncluidoKg" 
+                                placeholder="Equipaje incluido (kg)"
+                                class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                                required
+                            />
+                        </div>
+        
+                        <!-- Campo Reembolsable -->
+                        <div class="form-group">
+                            <label for="reembolsable" class="block text-sm font-medium text-gray-700">¿Reembolsable?</label>
+                            <input 
+                                type="checkbox" 
+                                id="reembolsable" 
+                                [(ngModel)]="nuevoTicket.reembolsable" 
+                                name="reembolsable" 
+                                class="mt-1"
+                            />
+                        </div>
+        
+                      <!-- Contenedor para los botones "Agregar Ticket" y "Salir" -->
+                    <div class="mt-4 flex justify-between items-center">
+                        <!-- Botón de "Agregar Ticket" -->
+                        <button 
+                            type="submit" 
+                            class="bg-indigo-600 text-white py-2 px-6 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50">
+                            {{indiceEditando == -1 ? "Crear tipo de vuelo" : "Editar tipo de vuelo"}}
+
+                        </button>
+
+                        <!-- Botón de "Salir" -->
+                        <button 
+                        type="button" 
+                        (click)="ocultarPopup()" 
+                        class="bg-red-600 text-white py-2 px-6 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50">
+                        Salir
+                    </button>
+                    
+                    </div>
+
+                    </form>
+        
+                    <!-- Mostrar mensaje de error si no se han completado los campos correctamente -->
+                    <div *ngIf="errorCreacion" class="mt-4 text-red-600">
+                        {{ errorCreacion }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-8">
+                <!-- Botón para abrir el modal -->
+                <div class="flex items-center justify-between mb-4">
+                    <!-- Encabezado -->
+                    <h3 class="text-xl font-semibold">Lista de Tipos de Tickets</h3>
+                
+                    <!-- Botón para abrir el modal -->
+                    <button 
+                        (click)="mostrarPopup()" type="button"
+                        class="bg-indigo-600 text-white py-2 px-6 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50">
+                        Crear Tipo de Ticket
+                    </button>
+                </div>
+                
+            
+                
+                
+                <!-- Contenedor con scroll -->
+                <div class="overflow-x-auto max-h-96">
+                    <div *ngIf="isTicketsEmpty" class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 my-4 rounded-md">
+                        <p>No hay tickets disponibles. Por favor, añada algunos.</p>
+                      </div>
+                      
+                    <table *ngIf="!isTicketsEmpty" class="min-w-full table-auto border border-gray-400 divide-y divide-gray-400">
+                        <thead>
+                          <tr class="bg-indigo-600 text-white">
+                            <th class="px-4 py-2 text-left">Tipo de Ticket</th>
+                            <th class="px-4 py-2 text-left">Precio (€)</th>
+                            <th class="px-4 py-2 text-left">Cantidad Disponible</th>
+                            <th class="px-4 py-2 text-left">Equipaje Incluido (Kg)</th>
+                            <th class="px-4 py-2 text-left">Reembolsable</th>
+                            <th class="px-4 py-2 text-left">Acciones</th>
+                          </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-400">
+                          <tr *ngFor="let ticket of tickets; let i = index"class="hover:bg-gray-100">
+                            <td class="px-4 py-2">{{ ticket.tipo }}</td>
+                            <td class="px-4 py-2">€{{ ticket.precio }}</td>
+                            <td class="px-4 py-2">{{ ticket.cantidadDisponible }}</td>
+                            <td class="px-4 py-2">{{ ticket.equipajeIncluidoKg }} Kg</td>
+                            <td class="px-4 py-2">{{ ticket.reembolsable ? 'Sí' : 'No' }}</td>
+                            <td class="px-4 py-2 flex space-x-2">
+                              <button (click)="editarTicket(i)" type="button" class="bg-yellow-500 text-white py-2 px-4 rounded-md hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-opacity-50">Editar</button>
+                              <button (click)="eliminarTicket(i)" type="button" class="bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50">Eliminar</button>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      
+                    
+                </div>
+            </div>
+            
+        </div>
+
+        <div class="form-step" *ngIf="fase === 3">
+        </div>
+        <div class="flex justify-between items-center mt-6">
+            <button
+              id="btn-atras"
+              type="button"
+              (click)="bajarFase()"
+              class="bg-gray-300 text-gray-800 px-6 py-2 rounded-lg hover:bg-gray-400 transition-all duration-300"
+              *ngIf="fase > 1">
+              Atrás
+            </button>
+    
+            <button
+              id="btn-continuar"
+              type="button"
+              (click)="subirFase()"
+              class="ml-auto bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-all duration-300"
+              *ngIf="fase == 1">
+              Continuar
+            </button>
+    
+            <button
+              id="btn-enviar"
+              type="submit"
+              class="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition-all duration-300"
+              *ngIf="fase === 2">
+              Crear Vuelo
+            </button>
+          </div>
+        
+
+        
+      </form>
+    </div>
+  </div>
+  

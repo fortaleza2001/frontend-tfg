@@ -1,11 +1,15 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { VuelosService } from '../services/vuelos.service';
+import { ActivatedRoute } from '@angular/router';
+
 // Definir la interfaz Vuelo
 interface Vuelo {
   codigo: string;
   origen: string;
   destino: string;
-  hora: string;
+  hora: Date;
+  estado: string;  // Agregado estado para los vuelos
 }
 
 @Component({
@@ -14,26 +18,58 @@ interface Vuelo {
   styleUrls: ['./gestion-vuelos.component.css'],
   imports: [CommonModule]
 })
-export class GestionVuelosComponent {
-  // Array de vuelos con el tipo Vuelo
-  vuelos: Vuelo[] = [
-    { codigo: 'AV123', origen: 'Bogotá', destino: 'Madrid', hora: '10:30 AM' },
-    { codigo: 'LA456', origen: 'Lima', destino: 'Miami', hora: '12:45 PM' },
-    { codigo: 'IB789', origen: 'Madrid', destino: 'Buenos Aires', hora: '2:00 PM' },
-    { codigo: 'AM101', origen: 'Ciudad de México', destino: 'Los Ángeles', hora: '3:15 PM' },
-    { codigo: 'UA202', origen: 'Nueva York', destino: 'Londres', hora: '5:30 PM' },
-    { codigo: 'AF303', origen: 'París', destino: 'Tokio', hora: '7:00 PM' },
-    { codigo: 'BA404', origen: 'Londres', destino: 'Dubai', hora: '9:45 PM' }
-  ];
+export class GestionVuelosComponent implements OnInit {
+  constructor(private vuelos_service: VuelosService, private route: ActivatedRoute) {}
 
-  vuelosFiltrados: Vuelo[] = [...this.vuelos]; // Lista de vuelos filtrados
+  id_aerolinea: any = '';
+  vuelos: Vuelo[] = []; // Lista de vuelos desde la API
+  vuelosFiltrados: Vuelo[] = []; // Lista de vuelos filtrados
   vuelosPaginados: Vuelo[] = []; // Lista de vuelos en la página actual
   paginaActual = 1;
   elementosPorPagina = 5;
   totalPaginas = 1;
+  totalVuelos: number = 0; // Total de vuelos
 
-  constructor() {
-    this.actualizarPaginacion();
+  ngOnInit(): void {
+    this.id_aerolinea = this.route.snapshot.paramMap.get('id');
+    this.Obtenervuelos();
+  }
+
+  Obtenervuelos() {
+    this.vuelos_service.getVuelosAerolinea(this.id_aerolinea).subscribe(
+      (response) => {
+        console.log('Vuelos obtenidos exitosamente:', response);
+        
+        // Resetear las listas antes de agregar los nuevos vuelos
+        this.vuelos = [];
+        this.vuelosFiltrados = [];
+
+        // Asignar los vuelos a la lista de vuelos
+        let vuelo: Vuelo;
+        for (let i = 0; i < response.contenido.length; i++) {
+          vuelo = {
+            codigo: response.contenido[i].codigo_vuelo,
+            origen: response.contenido[i].origen_pais,  // Asegúrate de que estos campos estén en la respuesta
+            destino: response.contenido[i].destino_pais, // Asegúrate de que estos campos estén en la respuesta
+            hora: new Date(response.contenido[i].fecha_salida),  // Asegúrate de que el formato de fecha sea correcto
+            estado: response.contenido[i].estado  // Asegúrate de que este campo esté presente en la respuesta
+          };
+
+          // Agregar el vuelo a la lista de vuelos
+          this.vuelos.push(vuelo);
+        }
+
+        // Copiar los vuelos a vuelosFiltrados para mantener sincronizadas las listas
+        this.vuelosFiltrados = [...this.vuelos];
+
+        // Actualizar el total de vuelos y paginación
+        this.totalVuelos = this.vuelos.length;
+        this.actualizarPaginacion();
+      },
+      (error) => {
+        console.error('Error al obtener los vuelos:', error);
+      }
+    );
   }
 
   // Filtra los vuelos en base a la búsqueda
@@ -42,8 +78,7 @@ export class GestionVuelosComponent {
     this.vuelosFiltrados = this.vuelos.filter(vuelo =>
       vuelo.codigo.toLowerCase().includes(texto) ||
       vuelo.origen.toLowerCase().includes(texto) ||
-      vuelo.destino.toLowerCase().includes(texto) ||
-      vuelo.hora.toLowerCase().includes(texto)
+      vuelo.destino.toLowerCase().includes(texto)
     );
     this.paginaActual = 1; // Reiniciar a la primera página después de filtrar
     this.actualizarPaginacion();
@@ -51,17 +86,19 @@ export class GestionVuelosComponent {
 
   // Actualiza la lista de vuelos según la página actual
   actualizarPaginacion() {
-    if (!Array.isArray(this.vuelosFiltrados)) {
-      console.error("vuelosFiltrados no es un array");
-      return;
+    // Si no hay vuelos, totalPáginas debe ser 0
+    if (this.vuelosFiltrados.length === 0) {
+      this.totalPaginas = 0;
+    } else {
+      this.totalPaginas = Math.ceil(this.vuelosFiltrados.length / this.elementosPorPagina);
     }
 
-    this.totalPaginas = Math.ceil(this.vuelosFiltrados.length / this.elementosPorPagina);
     // Asegurarse de que paginaActual no exceda el número total de páginas
-    if (this.paginaActual > this.totalPaginas) {
+    if (this.paginaActual > this.totalPaginas && this.totalPaginas > 0) {
       this.paginaActual = this.totalPaginas;
     }
 
+    // Establecer los vuelos para la página actual
     const inicio = (this.paginaActual - 1) * this.elementosPorPagina;
     const fin = inicio + this.elementosPorPagina;
     this.vuelosPaginados = this.vuelosFiltrados.slice(inicio, fin);

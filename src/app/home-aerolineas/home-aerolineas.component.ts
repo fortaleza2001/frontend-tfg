@@ -52,4 +52,5 @@ export class HomeAerolineasComponent implements OnInit {
   volverHomeAerolineas() {
     this.router.navigate(['/Aerolineas-home']); // Cambia '/ruta-deseada' por la ruta que deseas
   }
+
 }
