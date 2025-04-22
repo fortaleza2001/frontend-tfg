@@ -7,33 +7,35 @@
     </a>
   
     <h2 class="text-2xl font-semibold text-center text-gray-800 mb-6">Recuperar Contraseña</h2>
-  
-    <form  >
-      <!-- Correo electrónico -->
-      <div class="mb-4">
-        <label for="email" class="block text-sm font-medium text-gray-700">Correo Electrónico</label>
-        <input
-          id="email"
-          type="email"
-          formControlName="email"
-          class="mt-2 p-3 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          placeholder="Ingresa tu correo electrónico"
-        />
-       
-      </div>
-  
- 
-  
-      <!-- Botón para enviar el correo -->
-      <div class="mb-6">
-        <button
-          type="submit"
-          
-          class="w-full py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
-          Enviar enlace de recuperación
-        </button>
-      </div>
+   <!-- Mensaje de éxito -->
+   <div *ngIf="mensajeExito" class="mb-4 text-green-600 font-medium text-center bg-green-100 p-3 rounded">
+    {{ mensajeExito }}
+  </div>
+
+  <!-- Mensaje de error -->
+  <div *ngIf="mensajeError" class="mb-4 text-red-600 font-medium text-center bg-red-100 p-3 rounded">
+    {{ mensajeError }}
+  </div>
+    <form (ngSubmit)="recuperarContrasena()" #form="ngForm">
+      <label for="email">Correo electrónico</label>
+      <input
+        id="email"
+        type="email"
+        name="email"
+        [(ngModel)]="email"
+        required
+        email
+        class="mt-2 p-3 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        placeholder="Ingresa tu correo electrónico"
+      />
+    
+      <button
+        type="submit"
+        
+        class="w-full py-3 mt-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      >
+        Enviar enlace de recuperación
+      </button>
     </form>
   </div>
   

@@ -25,6 +25,41 @@ export class UserService {
   
   }
 
+  solicitarCambioPassword(email: string): Observable<any> {
+    const body = { email };
+    
+        return this.http.post(`${this.$apiUrl}/forgot-password`, body, {
+          headers: { 
+            'Content-Type': 'application/json',
+        
+          },
+        });
+  
+  }
+
+  verificarTokenContraseña(token:string,email: string): Observable<any> {
+    const body = { token,email };
+    
+        return this.http.post(`${this.$apiUrl}/verificar-token-pass`, body, {
+          headers: { 
+            'Content-Type': 'application/json',
+        
+          },
+        });
+  
+  }
+
+  cambiarContrasena(token:string,email: string,password: string): Observable<any> {
+    const body = { token,email,password };
+    
+        return this.http.post(`${this.$apiUrl}/cambiar-contrasena`, body, {
+          headers: { 
+            'Content-Type': 'application/json',
+        
+          },
+        });
+  
+  }
   loginwithGithub()
   {
     window.location.href = `${this.$apiUrl}/auth/github`;

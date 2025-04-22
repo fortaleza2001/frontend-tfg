@@ -1,0 +1,102 @@
+<body class="font-sans bg-gray-100">
+
+    <nav class="bg-white shadow-md">
+        <div class="max-w-screen-xl mx-auto px-4 py-4 flex items-center justify-between">
+          
+          <!-- Logo -->
+          <a href="/" class="flex items-center space-x-2 text-xl font-semibold text-blue-600">
+            <img src="https://flowbite.com/docs/images/logo.svg" alt="Logo" class="h-8" />
+            <span>FlightApp</span>
+          </a>
+      
+          <!-- Menú de navegación -->
+          <div class="hidden md:flex space-x-6 justify-center flex-1">
+            <!-- Enlaces de páginas -->
+            <a href="/reserva" class="text-gray-800 hover:text-blue-600">Reserva</a>
+            <a href="/aerolineas" class="text-gray-800 hover:text-blue-600">Aerolíneas</a>
+            <a href="/promociones" class="text-gray-800 hover:text-blue-600">Promociones</a>
+            <a href="/Soporte" class="text-gray-800 hover:text-blue-600">Soporte</a>
+          </div>
+      
+          <!-- Botones de autenticación si el usuario no está logueado -->
+          <div *ngIf="!isLoggedIn" class="flex space-x-4" id="auth-buttons">
+            <a href="/login" class="text-blue-600 hover:bg-blue-100 px-4 py-2 rounded-md border border-blue-600">Iniciar sesión</a>
+            <a href="/registro" class="text-blue-600 hover:bg-blue-100 px-4 py-2 rounded-md border border-blue-600">Registrarse</a>
+          </div>
+      
+          <div *ngIf="isLoggedIn" class="flex items-center justify-center space-x-4" id="user-info">
+            <div class="relative inline-block text-left">
+              <!-- Botón del usuario -->
+              <button (click)="toggleDropdown()" 
+                  class="flex items-center space-x-2 bg-white text-blue-700 py-2 px-4 rounded-full hover:bg-gray-200 focus:outline-none">
+                  <span>{{ username }}</span>
+                  <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                  </svg>
+              </button>
+          
+              <!-- Menú desplegable -->
+              <div *ngIf="dropdownOpen" class="absolute right-0 mt-2 w-48 bg-white text-gray-800 rounded-lg shadow-lg z-50">
+                <button  class="w-full text-left block px-4 py-2 hover:bg-gray-200">
+                  Perfil
+                </button>
+                
+                <button (click)="irAerolineas()"  class="w-full text-left block px-4 py-2 hover:bg-gray-200">
+                  Aerolineas
+                </button>
+                
+                <button (click)="logout()" class="w-full text-left block px-4 py-2 hover:bg-gray-200">
+                  Logout
+                </button>
+                
+              </div>
+            </div>
+          </div>
+          
+      
+        </div>
+      </nav>
+
+      <div class="max-w-xl mx-auto p-6 bg-white shadow-md rounded mt-10">
+        <h2 class="text-2xl font-bold mb-4 text-center text-blue-600">Soporte Técnico</h2>
+      
+        <p class="mb-4 text-gray-700 text-center">
+          ¿Tienes algún problema o pregunta? ¡Estamos aquí para ayudarte!
+        </p>
+      
+        <form (ngSubmit)="enviarFormulario()" #form="ngForm">
+          <label class="block mb-2">Correo electrónico</label>
+          <input
+            type="email"
+            name="email"
+            [(ngModel)]="email"
+            required
+            class="w-full p-3 border border-gray-300 rounded mb-4"
+            placeholder="Tu correo"
+          />
+      
+          <label class="block mb-2">Mensaje</label>
+          <textarea
+            name="mensaje"
+            [(ngModel)]="mensaje"
+            required
+            class="w-full p-3 border border-gray-300 rounded mb-4"
+            placeholder="Escribe tu mensaje"
+            rows="5"
+          ></textarea>
+      
+          <button
+            type="submit"
+            class="w-full bg-blue-600 text-white py-3 rounded hover:bg-blue-700 transition"
+          >
+            Enviar
+          </button>
+        </form>
+      
+        <div *ngIf="mensajeExito" class="mt-4 text-green-600 bg-green-100 p-3 rounded text-center">
+          {{ mensajeExito }}
+        </div>
+      </div>
+      
+
+</body>

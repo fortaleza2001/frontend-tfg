@@ -16,8 +16,12 @@
     }
   </style>
 </head>
-<body class="font-sans bg-gray-100">
 
+<body class="font-sans bg-gray-100">
+  <div *ngIf="!datosCargados" class="fixed inset-0 bg-white bg-opacity-80 flex flex-col items-center justify-center z-50">
+    <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500 border-solid"></div>
+    <p class="mt-4 text-gray-700 text-lg font-semibold">Cargando datos...</p>
+  </div>
 <!-- Barra de navegación -->
 <nav class="bg-white shadow-md">
   <div class="max-w-screen-xl mx-auto px-4 py-4 flex items-center justify-between">
@@ -34,7 +38,7 @@
       <a href="/reserva" class="text-gray-800 hover:text-blue-600">Reserva</a>
       <a href="/aerolineas" class="text-gray-800 hover:text-blue-600">Aerolíneas</a>
       <a href="/promociones" class="text-gray-800 hover:text-blue-600">Promociones</a>
-      <a href="/soporte" class="text-gray-800 hover:text-blue-600">Soporte</a>
+      <a href="/Soporte" class="text-gray-800 hover:text-blue-600">Soporte</a>
     </div>
 
     <!-- Botones de autenticación si el usuario no está logueado -->

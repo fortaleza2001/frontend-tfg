@@ -4,31 +4,35 @@ import { CookieService } from 'ngx-cookie-service';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { UserService } from '../services/user.service';
+import { FormsModule } from '@angular/forms';
 
 @Component({
-  selector: 'app-home',
-  templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css'],
-  imports: [CommonModule]
+  selector: 'app-soporte',
+  imports: [CommonModule,FormsModule],
+  templateUrl: './soporte.component.html',
+  styleUrl: './soporte.component.css'
 })
-export class HomeComponent implements OnInit {
-  datosCargados=false;
-  isLoggedIn: boolean = false; // Cambia este valor según el estado de autenticación
-  username: string = '';
-  isLoading: boolean = true; // Controla el estado de carga
-  menuOpen = false;
-
+export class SoporteComponent implements OnInit 
+{
   constructor(
     private http: HttpClient, 
     private cookieService: CookieService,
     private router: Router,
     private userService: UserService
   ) {}
-  dropdownOpen = false;
 
-  toggleDropdown() {
-    this.dropdownOpen = !this.dropdownOpen;
-  }
+
+  datosCargados=false;
+  isLoggedIn: boolean = false; // Cambia este valor según el estado de autenticación
+  username: string = '';
+  isLoading: boolean = true; // Controla el estado de carga
+  menuOpen = false;
+  dropdownOpen = false;
+  email: string = '';
+  mensaje: string = '';
+  mensajeExito: string = '';
+
+
 
   ngOnInit(): void {
     this.userService.checkAuthentication().subscribe(
@@ -54,7 +58,9 @@ export class HomeComponent implements OnInit {
       }
     );
   }
-
+  toggleDropdown() {
+    this.dropdownOpen = !this.dropdownOpen;
+  }
   logout(): void {
     this.userService.logout().subscribe(
       (response) => {
@@ -71,6 +77,11 @@ export class HomeComponent implements OnInit {
   {
     this.router.navigate(["/Aerolineas-home"]);
   }
-
+  enviarFormulario() {
+    // Aquí puedes conectar con tu backend o enviar un correo
+    this.mensajeExito = 'Tu mensaje ha sido enviado. ¡Gracias por contactarnos!';
+    this.email = '';
+    this.mensaje = '';
+  }
 
 }

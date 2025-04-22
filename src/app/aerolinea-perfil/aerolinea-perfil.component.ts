@@ -5,15 +5,18 @@ import { ChartConfiguration, ChartOptions, ChartType } from 'chart.js';
 import Chart from 'chart.js/auto';
 import {AerolineaService} from '../services/aerolinea.service';
 import { Router } from '@angular/router'; 
+import { environment } from '../../environments/environment';  // Importar el archivo de entorno
 
-interface Aerolinea {
-  id: string;
+export interface Aerolinea {
+  id?: string;
   nombreAerolinea: string;
-  codigoIATA: string;
-  direccionAerolinea: string;
-  paisOrigen: string;
-  logoAerolinea?: string;
+  logoAerolinea: string;
+  codigoIATA?: string;
+  direccionAerolinea?: string;
+  paisOrigen?: string;
+  telefonoAerolinea? : string;
 }
+
 
 @Component({
   selector: 'app-aerolinea-perfil',
@@ -25,15 +28,8 @@ interface Aerolinea {
 export class AerolineaPerfilComponent implements OnInit {
   aerolinea: Aerolinea | null = null;
   public lineChart: any;
-  // Datos falsos para simular la aerolínea
-  fakeAerolinea: Aerolinea = {
-    id: '1',
-    nombreAerolinea: 'Aerolínea Ficticia',
-    codigoIATA: 'AF123',
-    direccionAerolinea: 'Calle Ficticia 123, Ciudad Imaginaria',
-    paisOrigen: 'Imaginaria',
-    logoAerolinea: 'https://via.placeholder.com/150'
-  };
+  private $apiUrl = environment.apiUrl;  // Uso consistente de $apiUrl
+  datosCargados=false;
 
   createChart() {
     this.lineChart = new Chart('lineChart', {
@@ -50,9 +46,21 @@ export class AerolineaPerfilComponent implements OnInit {
           },
         ],
       },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false, // Esto permite que el gráfico se estire para llenar el contenedor
+        scales: {
+          x: {
+            ticks: {
+              autoSkip: true,
+              maxTicksLimit: 10
+            }
+          }
+        }
+      }
     });
   }
-
+  
 
   constructor(
    
@@ -63,19 +71,36 @@ export class AerolineaPerfilComponent implements OnInit {
   ) {}
 
  
-  obtenerAerolinea(id:any){
+  obtenerAerolinea(id: any) {
     this.aerolineaService.getAerolinea(id).subscribe({
       next: (response) => {
-        console.log( response);
+        console.log(response);
   
+        // Asumiendo que response.contenido.logo contiene el nombre del archivo del logo
+        const urlLogo = response.contenido.logoAerolinea
+  ? `${this.$apiUrl}/storage/logos/${response.contenido.logoAerolinea}`
+  : 'https://yourteachingmentor.com/wp-content/uploads/2020/12/istockphoto-1223671392-612x612-1.jpg';
+
+  
+        this.aerolinea = {
+          ...this.aerolinea,
+          nombreAerolinea: response.contenido.nombre,
+          logoAerolinea: urlLogo,
+          codigoIATA:response.contenido.codigo_AITA,
+          direccionAerolinea:response.contenido.direccion,
+          paisOrigen:response.contenido.pais,
+          telefonoAerolinea:response.contenido.telefono
+
+        };
+        this.datosCargados=true;
       },
       error: (error) => {
         console.error(error);
-     
-        
+        this.datosCargados=true;
       }
-    })
+    });
   }
+  
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');

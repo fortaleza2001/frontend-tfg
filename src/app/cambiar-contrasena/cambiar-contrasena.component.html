@@ -1,0 +1,76 @@
+<div *ngIf="!datosCargados" class="fixed inset-0 bg-white bg-opacity-80 flex flex-col items-center justify-center z-50">
+  <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500 border-solid"></div>
+  <p class="mt-4 text-gray-700 text-lg font-semibold">Cargando datos...</p>
+</div>
+
+<div *ngIf="!token_valido" class="max-w-md mx-auto p-6 bg-white shadow-lg rounded-lg mt-10">
+
+  <a href="/home"
+    class="inline-block mt-4 px-4 py-2 bg-gray-500 text-white rounded-full hover:bg-gray-600 transition duration-300 mb-6"
+  >
+    ← Volver al inicio
+  </a>
+
+  <h2 class="text-2xl font-semibold text-center text-gray-800 mb-6">
+    Cambiar Contraseña<br />
+    
+  </h2>
+
+  <div  class="text-center text-red-600 bg-red-100 p-4 rounded-lg">
+    {{ mensajeError || 'Enlace incorrecto o expirado.' }}
+  </div>
+</div>
+
+<!-- Mostrar formulario si el token es válido -->
+<div *ngIf="token_valido" class="max-w-md mx-auto p-6 bg-white shadow-lg rounded-lg mt-10">
+  <a href="/home"
+    class="inline-block mt-4 px-4 py-2 bg-gray-500 text-white rounded-full hover:bg-gray-600 transition duration-300"
+  >
+    ← Volver al inicio
+  </a>
+
+  <h2 class="text-2xl font-semibold text-center text-gray-800 mb-6">
+    Cambiar Contraseña<br />
+    <span class="text-blue-600 text-lg">para el correo {{ email }}</span>
+  </h2>
+
+  <div *ngIf="mensajeExito" class="mb-4 text-green-600 bg-green-100 p-3 rounded text-center">
+    {{ mensajeExito }}
+  </div>
+
+  <div *ngIf="mensajeError && token_valido" class="mb-4 text-red-600 bg-red-100 p-3 rounded text-center">
+    {{ mensajeError }}
+  </div>
+
+  <form (ngSubmit)="cambiarContrasena()" #form="ngForm">
+    <label for="password">Nueva contraseña</label>
+    <input
+      type="password"
+      id="password"
+      name="password"
+      required
+      [(ngModel)]="password"
+      class="mt-2 mb-4 p-3 w-full border border-gray-300 rounded-lg"
+      placeholder="Ingresa tu nueva contraseña"
+    />
+
+    <label for="confirmPassword">Confirmar contraseña</label>
+    <input
+      type="password"
+      id="confirmPassword"
+      name="confirmPassword"
+      required
+      [(ngModel)]="confirmPassword"
+      class="mt-2 mb-4 p-3 w-full border border-gray-300 rounded-lg"
+      placeholder="Confirma tu nueva contraseña"
+    />
+
+    <button
+      type="submit"
+      class="w-full py-3 mt-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+    >
+      Cambiar contraseña
+    </button>
+  </form>
+</div>
+  

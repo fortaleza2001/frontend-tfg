@@ -1,12 +1,22 @@
    <!-- Botón Volver al Home -->
 <!-- Botón Volver al Home -->
 
+<div *ngIf="!datosCargados" class="fixed inset-0 bg-white bg-opacity-80 flex flex-col items-center justify-center z-50">
+  <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500 border-solid"></div>
+  <p class="mt-4 text-gray-700 text-lg font-semibold">Cargando datos...</p>
+</div>
+
+
+
+<h1 class="text-4xl font-bold text-center text-gray-800 mt-10 mb-6">Perfil de Aerolínea</h1>
+
 <div class="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg mt-10">
     <a href="/home" class="inline-block px-4 py-2 bg-gray-500 text-white rounded-full hover:bg-gray-600 transition duration-300 mb-4">
         Volver al Home
       </a>
     <!-- Sección Información de la Aerolínea -->
     <div class="aerolinea-info mb-6 p-6 bg-white shadow-[10px_10px_20px_rgba(0,0,0,0.2)] rounded-lg">
+      <h3 class="text-2xl font-semibold text-gray-800 mb-4">Datos Generales</h3>
       <div class="flex justify-center mb-6">
         <img *ngIf="aerolinea?.logoAerolinea" [src]="aerolinea?.logoAerolinea" alt="Logo Aerolínea" class="w-40 h-40 rounded-full shadow-md">
       </div>
@@ -24,6 +34,11 @@
         <div class="flex justify-between">
           <span class="font-medium text-gray-700">País de Origen:</span>
           <span class="text-gray-600">{{ aerolinea?.paisOrigen }}</span>
+        </div>
+
+        <div class="flex justify-between">
+          <span class="font-medium text-gray-700">Telefono aerolinea:</span>
+          <span class="text-gray-600">{{ aerolinea?.telefonoAerolinea }}</span>
         </div>
       </div>
     </div>

@@ -209,7 +209,11 @@ if (nombreDuplicado) {
     this.vuelos_Service.postCrearVuelo(this.vuelo,this.id_aerolinea,this.tickets).subscribe(
       (response) => {
         console.log(response);
-        this.router.navigate(["/vuelos"]);
+        this.router.navigate(
+          ['/vuelos', this.id_aerolinea],
+          { state: { successMessage: 'Vuelo Creado correctamente' } }
+        );
+        
       },
       (error) => {
         console.error('Error al crear el vuelo', error);

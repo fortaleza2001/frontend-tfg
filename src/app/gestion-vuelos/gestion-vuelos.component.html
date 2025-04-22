@@ -1,3 +1,9 @@
+<div *ngIf="!datosCargados" class="fixed inset-0 bg-white bg-opacity-80 flex flex-col items-center justify-center z-50">
+  <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500 border-solid"></div>
+  <p class="mt-4 text-gray-700 text-lg font-semibold">Cargando datos...</p>
+</div>
+
+
 <!-- Botón Volver al Home -->
 <div class="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg mt-10">
   <a href="/aerolinea/{{id_aerolinea}}" class="inline-block px-4 py-2 bg-gray-500 text-white rounded-full hover:bg-gray-600 transition duration-300 mb-4">

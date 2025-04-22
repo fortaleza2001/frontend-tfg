@@ -10,6 +10,8 @@ import { CreateAirlineComponent } from './create-airline/create-airline.componen
 import { AerolineaPerfilComponent } from './aerolinea-perfil/aerolinea-perfil.component';
 import { CrearVueloComponent } from './crear-vuelo/crear-vuelo.component';
 import { RecuperarContraseñaComponent } from './formulario-recuperar-contrasena/formulario-recuperar-contrasena.component';
+import {CambiarContrasenaComponent } from './cambiar-contrasena/cambiar-contrasena.component'
+import {SoporteComponent } from './soporte/soporte.component'
 
 export const routes: Routes = [
   { path: 'home', component: HomeComponent },
@@ -24,5 +26,7 @@ export const routes: Routes = [
   { path: 'Aerolinea-perfil/:id', component: AerolineaPerfilComponent },
   { path: 'Crear-Vuelo/:id', component: CrearVueloComponent },
   { path: 'Formulario/Recuperar-password', component: RecuperarContraseñaComponent },
+  { path: 'CambiarContraseña', component: CambiarContrasenaComponent },
+  { path: 'Soporte', component: SoporteComponent },
   { path: '', redirectTo: '/home', pathMatch: 'full' } // Redirección a home
 ];

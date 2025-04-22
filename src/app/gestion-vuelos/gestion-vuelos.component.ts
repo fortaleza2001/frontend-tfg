@@ -21,6 +21,7 @@ interface Vuelo {
 export class GestionVuelosComponent implements OnInit {
   constructor(private vuelos_service: VuelosService, private route: ActivatedRoute) {}
 
+  datosCargados=false;
   id_aerolinea: any = '';
   vuelos: Vuelo[] = []; // Lista de vuelos desde la API
   vuelosFiltrados: Vuelo[] = []; // Lista de vuelos filtrados
@@ -65,9 +66,11 @@ export class GestionVuelosComponent implements OnInit {
         // Actualizar el total de vuelos y paginación
         this.totalVuelos = this.vuelos.length;
         this.actualizarPaginacion();
+        this.datosCargados=true;
       },
       (error) => {
         console.error('Error al obtener los vuelos:', error);
+        this.datosCargados=true;
       }
     );
   }
