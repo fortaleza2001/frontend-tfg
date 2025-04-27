@@ -6,12 +6,13 @@ import { CommonModule } from '@angular/common';
 import { UserService } from '../services/user.service';
 
 @Component({
-  selector: 'app-home',
-  templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css'],
-  imports: [CommonModule]
+  selector: 'app-reservas',
+  imports: [CommonModule],
+  templateUrl: './reservas.component.html',
+  styleUrl: './reservas.component.css'
 })
-export class HomeComponent implements OnInit {
+export class ReservasComponent implements OnInit {
+
   datosCargados=false;
   isLoggedIn: boolean = false; // Cambia este valor según el estado de autenticación
   username: string = '';
@@ -72,6 +73,5 @@ export class HomeComponent implements OnInit {
   {
     this.router.navigate(["/Aerolineas-home"]);
   }
-
 
 }

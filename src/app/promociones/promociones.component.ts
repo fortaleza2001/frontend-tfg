@@ -6,12 +6,33 @@ import { CommonModule } from '@angular/common';
 import { UserService } from '../services/user.service';
 
 @Component({
-  selector: 'app-home',
-  templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css'],
-  imports: [CommonModule]
+  selector: 'app-promociones',
+  imports: [CommonModule],
+  templateUrl: './promociones.component.html',
+  styleUrl: './promociones.component.css'
 })
-export class HomeComponent implements OnInit {
+export class PromocionesComponent {
+
+  promociones = [
+    {
+      titulo: '¡Vuelo a París por solo 99€!',
+      descripcion: 'Disfruta de una escapada romántica con vuelos de ida y vuelta incluidos.',
+      imagen: 'https://source.unsplash.com/400x250/?paris,france',
+      boton: 'Reservar ahora'
+    },
+    {
+      titulo: 'Descubre Roma desde 89€',
+      descripcion: 'Vuela a la ciudad eterna y explora sus maravillas históricas.',
+      imagen: 'https://source.unsplash.com/400x250/?rome,italy',
+      boton: 'Ver detalles'
+    },
+    {
+      titulo: 'Islas Canarias: sol todo el año',
+      descripcion: 'Paquetes vacacionales desde 120€, incluye vuelo + hotel.',
+      imagen: 'https://source.unsplash.com/400x250/?canary,islands',
+      boton: 'Aprovechar oferta'
+    }
+  ];
   datosCargados=false;
   isLoggedIn: boolean = false; // Cambia este valor según el estado de autenticación
   username: string = '';
@@ -72,6 +93,7 @@ export class HomeComponent implements OnInit {
   {
     this.router.navigate(["/Aerolineas-home"]);
   }
+
 
 
 }

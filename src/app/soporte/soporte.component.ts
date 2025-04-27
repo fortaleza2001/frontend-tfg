@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { UserService } from '../services/user.service';
 import { FormsModule } from '@angular/forms';
+import {SoporteService} from '../services/soporte.service';
 
 @Component({
   selector: 'app-soporte',
@@ -18,7 +19,8 @@ export class SoporteComponent implements OnInit
     private http: HttpClient, 
     private cookieService: CookieService,
     private router: Router,
-    private userService: UserService
+    private userService: UserService,
+    private soporteService: SoporteService
   ) {}
 
 
@@ -79,9 +81,23 @@ export class SoporteComponent implements OnInit
   }
   enviarFormulario() {
     // Aquí puedes conectar con tu backend o enviar un correo
-    this.mensajeExito = 'Tu mensaje ha sido enviado. ¡Gracias por contactarnos!';
-    this.email = '';
-    this.mensaje = '';
+
+    this.soporteService.postMandarSoporte(this.email , this.mensaje).subscribe(
+      (response) => {
+        console.log('Logout respuesta:', response);
+        this.mensajeExito = 'Tu mensaje ha sido enviado. ¡Gracias por contactarnos!';
+        this.email = '';
+        this.mensaje = '';
+      },
+      (error) => {
+        console.error('Error al realizar el logout', error)
+        this.mensajeExito = 'Tu mensaje ha sido enviado. ¡Gracias por contactarnos!';
+        this.email = '';
+        this.mensaje = '';
+      }
+    );
+
+    
   }
 
 }

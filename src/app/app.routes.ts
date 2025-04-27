@@ -12,6 +12,10 @@ import { CrearVueloComponent } from './crear-vuelo/crear-vuelo.component';
 import { RecuperarContraseñaComponent } from './formulario-recuperar-contrasena/formulario-recuperar-contrasena.component';
 import {CambiarContrasenaComponent } from './cambiar-contrasena/cambiar-contrasena.component'
 import {SoporteComponent } from './soporte/soporte.component'
+import { FlightListComponent} from './flight-list/flight-list.component'
+import { AerolineasTrabajoComponent} from './aerolineas-trabajo/aerolineas-trabajo.component'
+import { PromocionesComponent} from './promociones/promociones.component'
+import { ReservasComponent} from './reservas/reservas.component'
 
 export const routes: Routes = [
   { path: 'home', component: HomeComponent },
@@ -28,5 +32,10 @@ export const routes: Routes = [
   { path: 'Formulario/Recuperar-password', component: RecuperarContraseñaComponent },
   { path: 'CambiarContraseña', component: CambiarContrasenaComponent },
   { path: 'Soporte', component: SoporteComponent },
+  { path: 'buscar/vuelos', component: FlightListComponent },
+  { path: 'aerolineas/trabajo', component: AerolineasTrabajoComponent },
+  { path: 'reservas', component: ReservasComponent },
+  { path: 'promociones', component: PromocionesComponent },
+  
   { path: '', redirectTo: '/home', pathMatch: 'full' } // Redirección a home
 ];
