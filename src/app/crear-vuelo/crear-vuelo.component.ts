@@ -4,6 +4,9 @@ import { FormsModule } from '@angular/forms';
 import { VuelosService } from '../services/vuelos.service';
 import { Router } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
+import { DropdownModule } from 'primeng/dropdown'; // Importa el módulo de PrimeNG
+import { SelectModule } from 'primeng/select';
+import { UserService } from '../services/user.service';
 
 // Angular - modelo
 export interface TicketDTO {
@@ -18,7 +21,7 @@ export interface TicketDTO {
 @Component({
   selector: 'app-crear-vuelo',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule,DropdownModule,SelectModule],
   templateUrl: './crear-vuelo.component.html',
   styleUrls: ['./crear-vuelo.component.css']
 })
@@ -28,9 +31,87 @@ export class CrearVueloComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private vuelos_Service : VuelosService
+    private vuelos_Service : VuelosService,
+    private userService: UserService,
     
   ) {}
+  error =false;
+  datosCargados=false;
+  isLoggedIn: boolean = false; // Cambia este valor según el estado de autenticación
+  username: string = '';
+  isLoading: boolean = true; // Controla el estado de carga
+  menuOpen = false;
+  menuAbierto = false;
+  errorMensaje: string = '';
+  paises: any[] = [];
+
+  aeropuertos1: any[] = [];
+  aeropuertos2: any[] = [];
+  selectedAirport: { name: string; code: string, id:string } | null = null;
+  showModal = false;
+  filtro = '';
+
+  aeropuertosFiltrados = [...this.aeropuertos1];
+  
+  aeropuertoSeleccionado: { name: string; code: string, id:string } | null = null;
+
+   dropdownOpen = false;
+
+
+  toggleDropdown() {
+    this.dropdownOpen = !this.dropdownOpen;
+  }
+
+  logout(): void {
+    this.userService.logout().subscribe(
+      (response) => {
+        console.log('Logout respuesta:', response);
+        window.location.reload();
+      },
+      (error) => {
+        console.error('Error al realizar el logout', error);
+      }
+    );
+  }
+
+  irAerolineas()
+  {
+    this.router.navigate(["/Aerolineas-home"]);
+  }
+  
+  abrirModal() {
+    this.showModal = true;
+    this.aeropuertosFiltrados = this.aeropuertos1;
+    this.filtro = '';
+    this.aeropuertoSeleccionado = null;
+  }
+  
+  cerrarModal() {
+    this.showModal = false;
+  }
+  
+  filtrarAeropuertos() {
+    const texto = this.filtro.toLowerCase();
+    this.aeropuertosFiltrados = this.aeropuertos1.filter(a =>
+      a.name.toLowerCase().includes(texto)||a.municipality.toLowerCase().includes(texto)
+    );
+  }
+  
+  seleccionarTemporal(aeropuerto: { name: string; code: string ,id: string}) {
+    this.aeropuertoSeleccionado = aeropuerto;
+  }
+  
+  confirmarSeleccion() {
+    this.vuelo.aeropuesto_origen = this.aeropuertoSeleccionado?.name;
+    this.vuelo.aeropuesto_origen_id = this.aeropuertoSeleccionado?.id;
+    console.log(this.aeropuertoSeleccionado);
+    console.log(this.vuelo.aeropuesto_origen);
+    this.cerrarModal();
+  }
+  filtroDestino = '';
+
+  aeropuertoSeleccionadoDestino: any;
+
   id_aerolinea: any = '';
   tickets: TicketDTO[] = [
     
@@ -58,10 +139,44 @@ ticketsDisponibles: number = 0;
     fecha_llegada: new Date(),
     numero_tickets:"",
     numero_pasajeros:"",
+    aeropuesto_origen_id:"",
+    aeropuesto_final_id:"",
   }
-
-
-
+  showModalDestino = false;
+  
+  filtrarAeropuertosDestino() {
+    if (this.filtroDestino) {
+      this.aeropuertosFiltradosDestino = this.aeropuertos2.filter(aeropuerto =>
+        aeropuerto.name.toLowerCase().includes(this.filtroDestino.toLowerCase())
+      );
+    } else {
+      this.aeropuertosFiltradosDestino = [...this.aeropuertos2];
+    }
+  }
+  abrirModalDestino() {
+     
+    this.aeropuertosFiltradosDestino = [...this.aeropuertos2]; // Cargar todos los aeropuertos
+    this.showModalDestino = true; // Asegúrate de abrir el modal
+  
+    this.showModalDestino = true;
+    console.log("abierto");
+  }
+  aeropuertosFiltradosDestino = [...this.aeropuertos2];
+  confirmarSeleccionDestino() {
+    if (this.aeropuertoSeleccionadoDestino) {
+      this.vuelo.aeropuesto_destino = this.aeropuertoSeleccionadoDestino.name;
+      this.vuelo.aeropuesto_final_id = this.aeropuertoSeleccionadoDestino.id;      
+      this.cerrarModalDestino();
+    }
+  }
+   // Función para cerrar el modal de destino
+   cerrarModalDestino() {
+    this.showModalDestino = false;
+  }
+    // Seleccionar un aeropuerto de destino
+    seleccionarTemporalDestino(aeropuerto: any) {
+      this.aeropuertoSeleccionadoDestino = aeropuerto;
+    }
   nuevoTicket: TicketDTO = {
     tipo: '',
     precio: 0,
@@ -73,6 +188,31 @@ ticketsDisponibles: number = 0;
 
   ngOnInit(): void {
     this.id_aerolinea = this.route.snapshot.paramMap.get('id');
+    this.userService.checkAuthentication().subscribe(
+      (response) => {
+        if (response.user) {
+          this.isLoggedIn = true;
+          this.username = response.user.email; // O usa otra propiedad del usuario que desees
+          console.log('Usuario autenticado:', response.user);
+        } else {
+          this.isLoggedIn = false;
+          console.log('Usuario no autenticado');
+        }
+        this.isLoading = false;
+        this.datosCargados=true;
+
+      },
+      (error) => {
+        console.error('Error al comprobar la autenticación', error);
+        this.isLoggedIn = false;
+        this.isLoading = false;
+        this.datosCargados=true;
+        this.error =true;
+
+      }
+    );
+
+    this.obtenerpaises();
   }
 
   get isTicketsEmpty() {
@@ -106,6 +246,50 @@ ticketsDisponibles: number = 0;
    
   }
   
+    volverAlHome() {
+    // Aquí puedes redirigir al home
+    this.router.navigate(["/home"]);
+  }
+  onPaisOrigenSeleccionado(event: Event): void {
+    const paisCode = (event.target as HTMLSelectElement).value;
+    console.log('País seleccionado:', paisCode);
+    this.vuelos_Service.obtenerAeropuertosPais(paisCode).subscribe(
+      (aeropuertos) => {
+        this.aeropuertos1 = aeropuertos;
+        console.log('Aeropuertos cargados:', aeropuertos);
+      },
+      (error) => {
+        console.error('Error al obtener los aeropuertos:', error);
+      }
+    );
+  }
+  onPaisOrigenSeleccionadoDos(event: Event): void {
+    const paisCode = (event.target as HTMLSelectElement).value;
+    console.log('País seleccionado:', paisCode);
+    this.vuelos_Service.obtenerAeropuertosPais(paisCode).subscribe(
+      (aeropuertos) => {
+        this.aeropuertos2 = aeropuertos;
+        console.log('Aeropuertos cargados:', aeropuertos);
+      },
+      (error) => {
+        console.error('Error al obtener los aeropuertos:', error);
+      }
+    );
+  }
+
+  obtenerpaises()
+  {
+    this.vuelos_Service.obtenerpaises().subscribe(
+      (response) => {
+
+        this.paises = response; // Asignamos los países a la variable
+        console.log('Países cargados:', this.paises);
+      },
+      (error) => {
+        console.error(error);
+      }
+    );
+  }
 
 
   editarTicket(index: number) {
@@ -206,6 +390,7 @@ if (nombreDuplicado) {
 
     }
     console.log('Creando vuelo:', this.vuelo);
+    this.datosCargados=false;
     this.vuelos_Service.postCrearVuelo(this.vuelo,this.id_aerolinea,this.tickets).subscribe(
       (response) => {
         console.log(response);
@@ -213,10 +398,12 @@ if (nombreDuplicado) {
           ['/vuelos', this.id_aerolinea],
           { state: { successMessage: 'Vuelo Creado correctamente' } }
         );
+        this.datosCargados=true;
         
       },
       (error) => {
         console.error('Error al crear el vuelo', error);
+        this.datosCargados=true;
       }
     );
   }
@@ -232,7 +419,7 @@ subirFase() {
   const {
     paisOrigen, aeropuesto_origen, terminal_origen,
     pais_destino, aeropuesto_destino, terminal_destino,
-    fecha_salida, fecha_destino,
+    fecha_salida, fecha_llegada,
     numero_vuelo, numero_tickets, numero_pasajeros
   } = this.vuelo;
 
@@ -248,26 +435,32 @@ subirFase() {
   if (!terminal_destino) this.errores.push('La terminal de destino es obligatoria.');
 
   if (!fecha_salida) this.errores.push('La fecha de salida es obligatoria.');
-  if (!fecha_destino) this.errores.push('La fecha de llegada es obligatoria.');
+  if (!fecha_llegada) this.errores.push('La fecha de llegada es obligatoria.');
 
   if (numero_tickets == null) this.errores.push('El número de tickets es obligatorio.');
   if (numero_pasajeros == null) this.errores.push('El número de pasajeros es obligatorio.');
 
   // Validaciones lógicas de fechas
   const salida = new Date(fecha_salida);
-  const llegada = new Date(fecha_destino);
+  const llegada = new Date(fecha_llegada);
 
   if (fecha_salida && salida < ahora) {
     this.errores.push('La fecha de salida debe ser posterior a la actual.');
   }
 
-  if (fecha_destino && salida && llegada <= salida) {
+  if (fecha_llegada && salida && llegada <= salida) {
     this.errores.push('La fecha de llegada debe ser posterior a la de salida.');
   }
 
   // Validación de capacidad
   if (numero_tickets >= numero_pasajeros) {
     this.errores.push('El número de tickets debe ser menor que el número de pasajeros.');
+  }
+   if (numero_tickets > 200) {
+    this.errores.push('El número de tickets debe ser maximo de 200');
+  }
+    if (numero_pasajeros > 220) {
+    this.errores.push('El número de pasajeros debe ser maximo de 220');
   }
 
   if ((numero_pasajeros - numero_tickets) < 5) {

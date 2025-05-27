@@ -60,6 +60,8 @@
         <i class="bi bi-arrow-left"></i> Volver atrás
       </a>
       <h2 class="text-center">Crear Cuenta</h2>
+      <p *ngIf="errorMessage" class="text-center" style="color: red;">{{ errorMessage }}</p>
+
       <form>
         <div class="mb-3">
           <label for="email" class="form-label">Correo Electrónico</label>

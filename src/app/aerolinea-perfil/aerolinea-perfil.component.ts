@@ -6,6 +6,10 @@ import Chart from 'chart.js/auto';
 import {AerolineaService} from '../services/aerolinea.service';
 import { Router } from '@angular/router'; 
 import { environment } from '../../environments/environment';  // Importar el archivo de entorno
+import { UserService } from '../services/user.service';
+import { forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
+
 
 export interface Aerolinea {
   id?: string;
@@ -30,6 +34,19 @@ export class AerolineaPerfilComponent implements OnInit {
   public lineChart: any;
   private $apiUrl = environment.apiUrl;  // Uso consistente de $apiUrl
   datosCargados=false;
+  isLoggedIn: boolean = false; // Cambia este valor según el estado de autenticación
+  username: string = '';
+  isLoading: boolean = true; // Controla el estado de carga
+  menuOpen = false;
+  menuAbierto = false;
+  dropdownOpen = false;
+  error = false;
+
+  errorMensaje: string = '';
+
+    toggleDropdown() {
+    this.dropdownOpen = !this.dropdownOpen;
+  }
 
   createChart() {
     this.lineChart = new Chart('lineChart', {
@@ -66,55 +83,90 @@ export class AerolineaPerfilComponent implements OnInit {
    
     private router: Router,
     private aerolineaService: AerolineaService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private userService: UserService,
    
   ) {}
 
- 
-  obtenerAerolinea(id: any) {
-    this.aerolineaService.getAerolinea(id).subscribe({
-      next: (response) => {
-        console.log(response);
-  
-        // Asumiendo que response.contenido.logo contiene el nombre del archivo del logo
-        const urlLogo = response.contenido.logoAerolinea
-  ? `${this.$apiUrl}/storage/logos/${response.contenido.logoAerolinea}`
-  : 'https://yourteachingmentor.com/wp-content/uploads/2020/12/istockphoto-1223671392-612x612-1.jpg';
-
-  
-        this.aerolinea = {
-          ...this.aerolinea,
-          nombreAerolinea: response.contenido.nombre,
-          logoAerolinea: urlLogo,
-          codigoIATA:response.contenido.codigo_AITA,
-          direccionAerolinea:response.contenido.direccion,
-          paisOrigen:response.contenido.pais,
-          telefonoAerolinea:response.contenido.telefono
-
-        };
-        this.datosCargados=true;
+    logout(): void {
+    this.userService.logout().subscribe(
+      (response) => {
+        console.log('Logout respuesta:', response);
+        window.location.reload();
       },
-      error: (error) => {
-        console.error(error);
-        this.datosCargados=true;
+      (error) => {
+        console.error('Error al realizar el logout', error);
       }
-    });
+    );
   }
-  
+  volverHomeAerolinea() {
+  if (this.aerolinea?.id) {
+    this.router.navigate(['/aerolinea', this.aerolinea.id]);
+  } else {
+    console.warn('ID de aerolínea no disponible para navegar');
+  }
+}
+
+   volverAlHome() {
+    // Aquí puedes redirigir al home
+    this.router.navigate(["/home"]);
+  }
+
+  irAerolineas()
+  {
+    this.router.navigate(["/Aerolineas-home"]);
+  }
+
+
+ 
+
 
   ngOnInit(): void {
-    const id = this.route.snapshot.paramMap.get('id');
-    this.obtenerAerolinea(id);
-    this.createChart();
-  
+  const id = this.route.snapshot.paramMap.get('id');
+
+  const auth$ = this.userService.checkAuthentication().pipe(
+    catchError(error => {
+      this.error=true;
+      console.error('Error al comprobar autenticación', error);
+      this.isLoggedIn = false;
+      return of(null); // Evita que el forkJoin falle
+    })
+  );
+
+  const aerolinea$ = this.aerolineaService.getAerolinea(id).pipe(
+    catchError(error => {
+      console.error('Error al obtener aerolínea', error);
+      return of(null);
+    })
+  );
+
+  forkJoin([auth$, aerolinea$]).subscribe(([authResp, aerolineaResp]) => {
+    if (authResp?.user) {
+      this.isLoggedIn = true;
+      this.username = authResp.user.email;
+    }
+
+    if (aerolineaResp?.contenido) {
+      console.log(aerolineaResp);
+      const urlLogo = aerolineaResp.contenido.logoAerolinea
+        ? `${this.$apiUrl}/storage/logos/${aerolineaResp.contenido.logoAerolinea}`
+        : 'https://yourteachingmentor.com/wp-content/uploads/2020/12/istockphoto-1223671392-612x612-1.jpg';
+
       this.aerolinea = {
-        id: id || '0',
-        nombreAerolinea: 'Aerolínea Desconocida',
-        codigoIATA: 'XX000',
-        direccionAerolinea: 'Dirección no disponible',
-        paisOrigen: 'Desconocido',
-        logoAerolinea: 'https://via.placeholder.com/150'
+        id: aerolineaResp.contenido.id,
+        nombreAerolinea: aerolineaResp.contenido.nombre,
+        logoAerolinea: urlLogo,
+        codigoIATA: aerolineaResp.contenido.codigo_AITA,
+        direccionAerolinea: aerolineaResp.contenido.direccion,
+        paisOrigen: aerolineaResp.contenido.pais,
+        telefonoAerolinea: aerolineaResp.contenido.telefono,
       };
-    
-  }
+    }
+
+    this.datosCargados = true;
+    this.isLoading = false;
+    this.createChart(); // solo cuando esté todo listo
+  });
+}
+
 }

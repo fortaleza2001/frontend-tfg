@@ -16,6 +16,10 @@ import { FlightListComponent} from './flight-list/flight-list.component'
 import { AerolineasTrabajoComponent} from './aerolineas-trabajo/aerolineas-trabajo.component'
 import { PromocionesComponent} from './promociones/promociones.component'
 import { ReservasComponent} from './reservas/reservas.component'
+import {FlightDetailsComponent} from './flight-details/flight-details.component'
+import {FlightBuyFormComponent} from './flight-buy-form/flight-buy-form.component'
+
+import {ReservaDetalleComponent} from './reserva-detalle/reserva-detalle.component'
 
 export const routes: Routes = [
   { path: 'home', component: HomeComponent },
@@ -36,6 +40,9 @@ export const routes: Routes = [
   { path: 'aerolineas/trabajo', component: AerolineasTrabajoComponent },
   { path: 'reservas', component: ReservasComponent },
   { path: 'promociones', component: PromocionesComponent },
+  { path: 'vuelo/:id', component: FlightDetailsComponent },
+  { path: 'comprar/vuelo', component: FlightBuyFormComponent },
+  { path: 'reservas/vuelo/:id', component: ReservaDetalleComponent },
   
   { path: '', redirectTo: '/home', pathMatch: 'full' } // Redirección a home
 ];

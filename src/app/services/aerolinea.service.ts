@@ -41,6 +41,14 @@ export class AerolineaService {
       withCredentials: true
     });
   }
+  getAerolineasTrabajo(): Observable<any> {
+    return this.http.get(`${this.$apiUrl}/obtener-aerolineas-trabajo`, {
+      headers: { 
+        'Content-Type': 'application/json'
+      },
+      withCredentials: true
+    });
+  }
   
 
   PostCrearAerolinea(Aerolinea: any,cuentaPago: any): Observable<any> {

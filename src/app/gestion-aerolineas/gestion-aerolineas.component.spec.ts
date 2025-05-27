@@ -1,36 +1,23 @@
-import { Component } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-interface Airline {
-  id: number;
-  name: string;
-  image: string;
-}
+import { GestionAerolineasComponent } from './gestion-aerolineas.component';
 
-@Component({
-  selector: 'app-gestion-aerolineas',
-  templateUrl: './gestion-aerolineas.component.html',
-  styleUrls: ['./gestion-aerolineas.component.css']
-})
-export class GestionAerolineasComponent {
-  airlines: Airline[] = [
-    { id: 1, name: 'Aerolínea A', image: 'https://via.placeholder.com/250' },
-    { id: 2, name: 'Aerolínea B', image: 'https://via.placeholder.com/250' }
-  ];
+describe('GestionAerolineasComponent', () => {
+  let component: GestionAerolineasComponent;
+  let fixture: ComponentFixture<GestionAerolineasComponent>;
 
-  createAirline() {
-    const newId = this.airlines.length + 1;
-    this.airlines.push({
-      id: newId,
-      name: `Aerolínea ${newId}`,
-      image: 'https://via.placeholder.com/250'
-    });
-  }
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [GestionAerolineasComponent]
+    })
+    .compileComponents();
 
-  modifyAirline(id: number) {
-    alert(`Modificar aerolínea con ID ${id}`);
-  }
+    fixture = TestBed.createComponent(GestionAerolineasComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
 
-  administerAirline(id: number) {
-    alert(`Administrar aerolínea con ID ${id}`);
-  }
-}
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});

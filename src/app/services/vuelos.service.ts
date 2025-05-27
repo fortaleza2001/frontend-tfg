@@ -28,6 +28,17 @@ export class VuelosService {
   
   }
 
+  postBuscar(busqueda: any): Observable<any> {
+    const body = busqueda; // Ya no es necesario envolverlo en un objeto adicional, ya que 'busqueda' es el objeto que vas a enviar
+  
+    return this.http.post(`${this.$apiUrl}/buscar-vuelos`, body, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      withCredentials: true, // Aseguramos que se envíen las cookies con la solicitud
+    });
+  }
+  
   getVuelosAerolinea(id:any): Observable<any> {
     
     return this.http.get(`${this.$apiUrl}/aerolinea/${id}/vuelos`, {
@@ -39,5 +50,115 @@ export class VuelosService {
     });
 
 }
+
+obtenerpaises(): Observable<any> {
+    
+  return this.http.get(`${this.$apiUrl}/obtener-paises`, {
+    headers: { 
+      'Content-Type': 'application/json',
+  
+    },
+    withCredentials: true // Aseguramos que se envíen las cookies con la solicitud
+  });
+
+}
+
+obtenerAeropuertosPais(pais:any): Observable<any> {
+    
+  return this.http.get(`${this.$apiUrl}/obtener-aeropuertos/${pais}`, {
+    headers: { 
+      'Content-Type': 'application/json',
+  
+    },
+    withCredentials: true // Aseguramos que se envíen las cookies con la solicitud
+  });
+
+}
+
+obtenerVuelo(id:any): Observable<any> {
+    
+  return this.http.get(`${this.$apiUrl}/obtener-vuelo/${id}`, {
+    headers: { 
+      'Content-Type': 'application/json',
+  
+    },
+    withCredentials: true // Aseguramos que se envíen las cookies con la solicitud
+  });
+
+}
+obtenerVueloReserva(): Observable<any> {
+    
+  return this.http.get(`${this.$apiUrl}/reservas/vuelos`, {
+    headers: { 
+      'Content-Type': 'application/json',
+  
+    },
+    withCredentials: true // Aseguramos que se envíen las cookies con la solicitud
+  });
+
+}
+
+obtenerVueloReservaDetalle($id:any): Observable<any> {
+    
+  return this.http.get(`${this.$apiUrl}/obtenerReservas/${$id}`, {
+    headers: { 
+      'Content-Type': 'application/json',
+  
+    },
+    withCredentials: true // Aseguramos que se envíen las cookies con la solicitud
+  });
+
+}
+
+DevolverTicket(id: any, motivo: any): Observable<any> {
+  return this.http.post(
+    `${this.$apiUrl}/devolverTicket/${id}`,
+    { motivo }, // esto es el body
+    {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      withCredentials: true, // se mantiene aquí
+    }
+  );
+}
+
+DescargarTicket(id:any): Observable<Blob> {
+  return this.http.get(`${this.$apiUrl}/ticket/${id}`, {
+    headers: { 
+      'Content-Type': 'application/json',
+    },
+    withCredentials: true,  // Para enviar las cookies de autenticación si es necesario
+    responseType: 'blob'    // Importante para manejar la respuesta como un Blob (archivo binario)
+  });
+}
+DescargarFactura(id:any): Observable<Blob> {
+  return this.http.get(`${this.$apiUrl}/generar-factura/${id}`, {
+    headers: { 
+      'Content-Type': 'application/json',
+    },
+    withCredentials: true,  // Para enviar las cookies de autenticación si es necesario
+    responseType: 'blob'    // Importante para manejar la respuesta como un Blob (archivo binario)
+  });
+}
+
+ComprarPedido(vuelo: any, pedidos: any, billetes: any,pago:any): Observable<any> {
+  // Preparamos los datos a enviar en el cuerpo de la solicitud
+  const body = {
+    vuelo: vuelo,          // Incluimos el vuelo
+    tickets: pedidos,      // Incluimos los pedidos
+    billetes: billetes,
+    pagos:pago
+  };
+
+  // Realizamos la solicitud POST con el cuerpo
+  return this.http.post(`${this.$apiUrl}/vuelos/comprarVuelo`, body, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    withCredentials: true  // Aseguramos que se envíen las cookies con la solicitud
+  });
+}
+
 
 }

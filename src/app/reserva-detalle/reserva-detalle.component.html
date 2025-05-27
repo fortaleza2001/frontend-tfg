@@ -1,0 +1,243 @@
+<div *ngIf="!datosCargados" class="fixed inset-0 bg-white bg-opacity-80 flex flex-col items-center justify-center z-50">
+    <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500 border-solid"></div>
+    <p class="mt-4 text-gray-700 text-lg font-semibold">Cargando datos...</p>
+</div>
+
+<!-- Barra de navegación -->
+<nav class="bg-white shadow-md">
+  <div class="max-w-screen-xl mx-auto px-4 py-4 flex items-center justify-between">
+    
+    <!-- Logo -->
+    <a href="/" class="flex items-center space-x-2 text-xl font-semibold text-blue-600">
+      <img src="https://flowbite.com/docs/images/logo.svg" alt="Logo" class="h-8" />
+      <span>FlightApp</span>
+    </a>
+
+    <!-- Menú de navegación -->
+    <div class="hidden md:flex space-x-6 justify-center flex-1">
+      <a href="/reservas" class="text-gray-800 hover:text-blue-600">Reserva</a>
+      <a href="/aerolineas/trabajo" class="text-gray-800 hover:text-blue-600">Aerolíneas</a>
+      <a href="/promociones" class="text-gray-800 hover:text-blue-600">Promociones</a>
+      <a href="/Soporte" class="text-gray-800 hover:text-blue-600">Soporte</a>
+    </div>
+
+    <!-- Botones de autenticación si el usuario no está logueado -->
+    <div *ngIf="!isLoggedIn" class="flex items-center space-x-2 whitespace-nowrap overflow-x-auto" id="auth-buttons">
+      <a href="/login" class="text-blue-600 hover:bg-blue-100 px-4 py-2 rounded-md border border-blue-600">Iniciar sesión</a>
+      <a href="/registro" class="text-blue-600 hover:bg-blue-100 px-4 py-2 rounded-md border border-blue-600">Registrarse</a>
+    </div>
+
+    <div *ngIf="isLoggedIn" class="flex items-center justify-center space-x-4" id="user-info">
+      <div class="relative inline-block text-left">
+        <button (click)="toggleDropdown()" 
+            class="flex items-center space-x-2 bg-white text-blue-700 py-2 px-4 rounded-full hover:bg-gray-200 focus:outline-none">
+            <span>{{ username }}</span>
+            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+        </button>
+    
+        <!-- Menú desplegable -->
+        <div *ngIf="dropdownOpen" class="absolute right-0 mt-2 w-48 bg-white text-gray-800 rounded-lg shadow-lg z-50">
+          <button  class="w-full text-left block px-4 py-2 hover:bg-gray-200">
+            Perfil
+          </button>
+          <button (click)="irAerolineas()"  class="w-full text-left block px-4 py-2 hover:bg-gray-200">
+            Aerolineas
+          </button>
+          <button (click)="logout()" class="w-full text-left block px-4 py-2 hover:bg-gray-200">
+            Logout
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Menú de navegación solo visible en pantallas pequeñas -->
+  <div class="flex flex-row flex-wrap justify-center items-center gap-4 pb-4 md:hidden">
+    <a href="/reservas" class="px-4 py-2 rounded-lg bg-white shadow hover:bg-blue-100 text-blue-700 transition duration-200">
+      Reserva
+    </a>
+    <a href="/aerolineas/trabajo" class="px-4 py-2 rounded-lg bg-white shadow hover:bg-blue-100 text-blue-700 transition duration-200">
+      Aerolíneas
+    </a>
+    <a href="/promociones" class="px-4 py-2 rounded-lg bg-white shadow hover:bg-blue-100 text-blue-700 transition duration-200">
+      Promociones
+    </a>
+    <a href="/soporte" class="px-4 py-2 rounded-lg bg-white shadow hover:bg-blue-100 text-blue-700 transition duration-200">
+      Soporte
+    </a>
+  </div>
+
+</nav>
+ <div *ngIf="error" class="flex flex-col items-center justify-center min-h-screen text-center px-4">
+    <h1 class="text-3xl font-bold text-red-600 mb-4">Error del servidor</h1>
+    <p class="text-lg text-gray-600 mb-6">Ha ocurrido un problema al cargar la información. Por favor, vuelva más tarde.</p>
+    <button 
+      class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-300"
+      (click)="volverAlHome()"
+    >
+      Volver al inicio
+    </button>
+  </div>
+
+
+  <!-- Modal para solicitar reembolso -->
+<div *ngIf="isModalOpen" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+  <div class="bg-white p-6 rounded-lg shadow-lg w-96">
+    <h2 class="text-2xl font-semibold text-center text-gray-800 mb-4">Solicitar Reembolso</h2>
+    <form (submit)="submitReembolso()">
+      <div class="mb-4">
+        <label for="motivo" class="block text-gray-700">Motivo del reembolso</label>
+        <textarea 
+          id="motivo" 
+          [(ngModel)]="motivo" 
+          name="motivo" 
+          rows="4" 
+          class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          required
+        ></textarea>
+      </div>
+      <div class="flex justify-between">
+        <button 
+          type="button" 
+          class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition" 
+          (click)="closeModal()">
+          Cancelar
+        </button>
+        <button 
+          type="submit" 
+          class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition">
+          Solicitar
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<!-- Contenido del vuelo -->
+<div *ngIf="!error" class="container mx-auto p-6 bg-white shadow-lg rounded-lg mt-4">
+    <div class="text-center mb-8">
+        <h1 class="text-4xl font-bold text-gray-800">{{ vuelo.nombre }}</h1>
+        <p class="text-lg text-gray-600 mt-2">
+            Estado: 
+            <span [ngClass]="{'text-green-500': vuelo.estado === 'Confirmado', 'text-red-500': vuelo.estado !== 'Confirmado'}" class="font-semibold">
+                {{ vuelo.estado }}
+            </span>
+        </p>
+    </div>
+
+    <!-- Sección de Acciones -->
+    <div class="flex flex-col items-center gap-6">
+    <!-- Botón de Factura -->
+    <div class="hover:scale-105 transition duration-300">
+        <button 
+            *ngIf="vuelo.estado === 'Confirmado'" 
+            (click)="descargarFactura()" 
+            class="w-[300px] bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-md shadow-md transition duration-300"
+        >
+            Descargar Factura
+        </button>
+        <p *ngIf="vuelo.estado !== 'Confirmado'" class="text-red-500 mt-2 text-sm text-center">
+            El vuelo aún no está confirmado, no puedes descargar la factura.
+        </p>
+    </div>
+<div *ngIf="reembolsoExitoso" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
+  Billete reembolsado correctamente.
+</div>
+
+</div>
+
+
+    <!-- Sección de Tickets -->
+<div *ngFor="let ticket of vuelo.ticketTypes" class="my-8 p-6 border-t border-b border-gray-200 rounded-lg hover:bg-gray-50 transition duration-300 text-center">
+    <h2 class="text-2xl font-semibold text-gray-800 mb-4">{{ ticket.nombre }}</h2>
+    <p class="text-gray-600 mb-2">Descripción: {{ ticket.descripcion }}</p>
+    <p class="text-gray-600 mb-4">Precio: {{ ticket.precio | currency:'EUR' }}</p>
+
+    <!-- Nombre del Comprador -->
+    <p class="text-gray-600 mb-4">Comprador: <span class="font-semibold">{{ ticket.comprador }}</span></p>
+
+    <!-- Estado de Reembolso -->
+    <p class="text-gray-600 mb-4">
+       <span *ngIf="ticket.reembolsable === true" class="text-green-500 font-semibold">Reembolsable</span>
+<span *ngIf="ticket.reembolsable === false" class="text-red-500 font-semibold">No Reembolsable</span>
+
+        
+    </p>
+
+    <p>{{ticket.rembolsable}} </p>
+
+    <!-- Botón de Solicitar Reembolso (solo si es reembolsable) -->
+    <!-- Sección de Reembolso -->
+<!-- Botón de Solicitar Reembolso (solo si es reembolsable) -->
+<div *ngIf="ticket.reembolsable == true">
+  <button 
+    *ngIf="vuelo.estado === 'Confirmado'" 
+    (click)="openModal(ticket.id)"
+    class="w-[200px] h-[60px] bg-red-600 hover:bg-red-700 text-white font-semibold rounded-md shadow-md transition duration-300 mb-4"
+  >
+    Solicitar Reembolso
+  </button>
+  <p *ngIf="vuelo.estado !== 'Confirmado'" class="text-red-500 mt-2 text-sm">
+    El vuelo aún no está confirmado, no puedes solicitar el reembolso.
+  </p>
+</div>
+
+
+<!-- Botón de Descargar el Ticket -->
+<div>
+    <button 
+        *ngIf="vuelo.estado === 'Confirmado'" 
+        (click)="descargarTicket(ticket)"
+        class="w-[200px] h-[60px] bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-md shadow-md transition duration-300"
+    >
+        Descargar Ticket
+    </button>
+    <p *ngIf="vuelo.estado !== 'Confirmado'" class="text-red-500 mt-2 text-sm">
+        El vuelo aún no está confirmado, no puedes descargar el ticket.
+    </p>
+</div>
+
+</div>
+</div>
+
+
+<footer class="w-full bg-gray-800 text-white py-6 mt-auto">
+  <div class="max-w-7xl mx-auto px-6 flex flex-col items-center md:flex-row justify-between">
+    <!-- Sección de enlaces -->
+    <div class="mb-4 md:mb-0">
+      <h3 class="text-lg font-semibold">Mythical Airline</h3>
+      <p class="text-gray-400 text-sm">Tu aerolínea gestionada desde la web.</p>
+    </div>
+
+    <!-- Enlaces rápidos -->
+    <div class="flex flex-col md:flex-row gap-4">
+      <a href="/" class="text-gray-300 hover:text-white text-sm">Inicio</a>
+      <a href="#" class="text-gray-300 hover:text-white text-sm">Sobre nosotros</a>
+      <a href="#" class="text-gray-300 hover:text-white text-sm">Servicios</a>
+      <a href="#" class="text-gray-300 hover:text-white text-sm">Contacto</a>
+    </div>
+
+    <!-- Información de redes sociales -->
+    <div class="flex gap-4 mt-4 md:mt-0">
+      <a href="#" class="text-gray-300 hover:text-white">
+        <i class="fab fa-facebook-f"></i> <!-- Ícono de Facebook -->
+      </a>
+      <a href="#" class="text-gray-300 hover:text-white">
+        <i class="fab fa-twitter"></i> <!-- Ícono de Twitter -->
+      </a>
+      <a href="#" class="text-gray-300 hover:text-white">
+        <i class="fab fa-instagram"></i> <!-- Ícono de Instagram -->
+      </a>
+    </div>
+  </div>
+
+  <div class="text-center mt-6 text-sm text-gray-400">
+    <p>&copy; 2025 Mythical Airline. Todos los derechos reservados.</p>
+  </div>
+</footer>
+
+  

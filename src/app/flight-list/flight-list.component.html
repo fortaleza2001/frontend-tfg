@@ -1,3 +1,7 @@
+<div *ngIf="!datosCargados" class="fixed inset-0 bg-white bg-opacity-80 flex flex-col items-center justify-center z-50">
+  <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500 border-solid"></div>
+  <p class="mt-4 text-gray-700 text-lg font-semibold">Cargando datos...</p>
+</div>
 <nav class="bg-white shadow-md">
   <div class="max-w-screen-xl mx-auto px-4 py-4 flex items-center justify-between">
     
@@ -59,36 +63,98 @@
 
   <!-- TÍTULO DE FILTRO -->
   <h2 class="text-2xl font-bold text-gray-800 mb-4">🧭 Filtro de Vuelos</h2>
+     <div *ngIf="camposInvalidos" class="text-red-600 font-semibold w-full">
+  Por favor, llena todos los campos del formulario.
+</div>
 
-  <!-- FILTROS -->
-  <div class="bg-white rounded-xl shadow p-4 mb-8 border flex flex-col sm:flex-row gap-4">
-    <input [(ngModel)]="filtroOrigen" placeholder="Origen"
-           class="flex-1 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400" />
-  
-    <input [(ngModel)]="filtroDestino" placeholder="Destino"
-           class="flex-1 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400" />
-  
-    <input [(ngModel)]="filtroPrecio" type="number" placeholder="Precio máx"
-           class="w-40 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400" />
-  
-    <!-- Botón de Buscar -->
-    <button 
+<!-- FILTROS -->
+<div class="bg-white rounded-xl shadow p-6 mb-8 border">
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <!-- País de Origen -->
+    <div>
+      <label for="paisOrigen" class="block text-gray-700 mb-1">País Origen</label>
+      <select [(ngModel)]="paisOrigen" name="paisOrigen" id="paisOrigen"
+              class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400">
+        <option value="">País Origen</option>
+        <option value="ES">España</option>
+        <option value="FR">Francia</option>
+        <option value="IT">Italia</option>
+        <option value="US">Estados Unidos</option>
+        <option value="MX">México</option>
+        <option value="AR">Argentina</option>
+      </select>
+    </div>
+
+    <!-- Ciudad de Origen -->
+    <div>
+      <label for="origen" class="block text-gray-700 mb-1">Ciudad Origen</label>
+      <input [(ngModel)]="origen" name="origen" id="origen" placeholder="Ciudad Origen"
+             class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400" />
+    </div>
+
+    <!-- País de Destino -->
+    <div>
+      <label for="paisDestino" class="block text-gray-700 mb-1">País Destino</label>
+      <select [(ngModel)]="paisDestino" name="paisDestino" id="paisDestino"
+              class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400">
+        <option value="">País Destino</option>
+        <option value="ES">España</option>
+        <option value="FR">Francia</option>
+        <option value="IT">Italia</option>
+        <option value="US">Estados Unidos</option>
+        <option value="MX">México</option>
+        <option value="AR">Argentina</option>
+      </select>
+    </div>
+
+    <!-- Ciudad de Destino -->
+    <div>
+      <label for="destino" class="block text-gray-700 mb-1">Ciudad Destino</label>
+      <input [(ngModel)]="destino" name="destino" id="destino" placeholder="Ciudad Destino"
+             class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400" />
+    </div>
+
+    <!-- Fecha de Salida -->
+    <div>
+      <label for="fechaSalida" class="block text-gray-700 mb-1">Fecha de Salida</label>
+      <input [(ngModel)]="fechaSalida" name="fechaSalida" id="fechaSalida" type="date"
+             class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400" />
+    </div>
+
+    <!-- Pasajeros -->
+    <div>
+      <label for="pasajeros" class="block text-gray-700 mb-1">Pasajeros</label>
+      <input [(ngModel)]="pasajeros" id="pasajeros" type="number" min="1"
+             class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400" />
+    </div>
+  </div>
+
+  <!-- Botón de Buscar -->
+  <div class="flex justify-center mt-6">
+    <button type="button" (click)="enviar()"
             class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-md transition">
       Buscar
     </button>
   </div>
+</div>
+
   
 
   <!-- TÍTULO DE VUELOS -->
   <h2 class="text-2xl font-bold text-gray-800 mb-4">✈️ Vuelos Disponibles</h2>
 
-  <!-- CANTIDAD DE VUELOS -->
-  <p class="text-gray-700 font-medium mb-2">
-    {{ vuelosFiltrados.length }} vuelo{{ vuelosFiltrados.length === 1 ? '' : 's' }} encontrado{{ vuelosFiltrados.length === 1 ? '' : 's' }}.
-  </p>
-  
+ <!-- CANTIDAD DE VUELOS -->
+<p class="text-gray-700 font-medium mb-2">
+  {{ vuelosFiltrados.length }} vuelo{{ vuelosFiltrados.length === 1 ? '' : 's' }} encontrado{{ vuelosFiltrados.length === 1 ? '' : 's' }}.
+</p>
 
-<div id="lista-vuelos" class="h-[600px] overflow-y-auto border rounded-2xl p-4 shadow-inner space-y-4">
+<!-- Mensaje si no hay vuelos -->
+<div *ngIf="vuelosFiltrados.length === 0" class="text-center text-gray-500 mt-6">
+  <p>No hay vuelos disponibles en este momento.</p>
+</div>
+
+<!-- Lista de vuelos si hay vuelos disponibles -->
+<div *ngIf="vuelosFiltrados.length > 0" id="lista-vuelos" class="h-[600px] overflow-y-auto border rounded-2xl p-4 shadow-inner space-y-4">
   <div *ngFor="let vuelo of vuelosFiltradosPaginados; let i = index"
        class="bg-white shadow rounded-xl p-6 border hover:shadow-lg transition-shadow">
     <h3 class="text-2xl font-semibold text-gray-800 mb-4">{{ vuelo.origen }} → {{ vuelo.destino }}</h3>
@@ -103,53 +169,113 @@
       <!-- Botón Ver Vuelo -->
       <div>
         <button 
-                class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow transition">
-          Ver Vuelo
-        </button>
+        type="button" 
+        (click)="verVuelo(i)" 
+        class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow transition">
+        Ver Vuelo
+      </button>
       </div>
     </div>
-    
 
-
-    
     <!-- Tipos de billete con control de cantidad -->
     <div *ngFor="let tipo of vuelo.tipos; let j = index" class="mt-6 border-t pt-6">
       <div class="flex flex-col md:flex-row md:items-center md:justify-between">
         <div>
           <p class="text-lg font-semibold text-gray-800">Tipo: {{ tipo.nombre }}</p>
           <p class="text-gray-600">Precio: <span class="font-medium">{{ tipo.precio | currency:'USD' }}</span></p>
+          <p class="text-gray-600 mt-2">Cantidad disponible: <span class="font-medium">{{ tipo.disponibles }}</span></p>
+      
+      <!-- Mensaje si no hay disponibilidad -->
+      <p *ngIf="tipo.disponibles <= 0" class="text-red-600">No hay más billetes disponibles.</p>
         </div>
     
         <!-- Contador con botones -->
         <div class="flex items-center space-x-3 mt-4 md:mt-0">
-          <button (click)="decrementarCantidad(i, j)" class="w-8 h-8 flex items-center justify-center bg-gray-200 hover:bg-gray-300 text-lg rounded-full">−</button>
-          <input type="number"
-                 class="w-16 h-8 text-center border border-gray-300 rounded-md"
-                 [value]="cantidades[i][j]"
-                 readonly>
-          <button (click)="incrementarCantidad(i, j)" class="w-8 h-8 flex items-center justify-center bg-gray-200 hover:bg-gray-300 text-lg rounded-full">+</button>
+          <!-- Botón para decrementar la cantidad, deshabilitado si no hay billetes disponibles -->
+          <button 
+            (click)="decrementarCantidad(i, j)" 
+            [disabled]="tipo.cantidad_disponible <= 0 || cantidades[i][j] <= 0" 
+            class="w-8 h-8 flex items-center justify-center bg-gray-200 hover:bg-gray-300 text-lg rounded-full"
+          >
+            −
+          </button>
+        
+          <!-- Campo de entrada para mostrar la cantidad -->
+          <input 
+            type="number"
+            class="w-16 h-8 text-center border border-gray-300 rounded-md"
+            [value]="cantidades[i][j]"
+            readonly
+          >
+        
+          <!-- Botón para incrementar la cantidad, deshabilitado si no hay billetes disponibles -->
+          <button 
+            (click)="incrementarCantidad(i, j)" 
+            [disabled]="tipo.cantidad_disponible <= 0 || cantidades[i][j] >= tipo.cantidad_disponible" 
+            class="w-8 h-8 flex items-center justify-center bg-gray-200 hover:bg-gray-300 text-lg rounded-full"
+          >
+            +
+          </button>
         </div>
+        
       </div>
     </div>
-    
 
     <!-- Botón único de compra -->
-    <button (click)="comprarVuelo(i)" class="mt-6 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded w-full">
+    <button (click)="comprar(i)" class="mt-6 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded w-full">
       Comprar este vuelo
     </button>
   </div>
 </div>
 
+<!-- PAGINACIÓN -->
+<div class="flex justify-center mt-4 gap-4">
+  <button (click)="paginaAnterior()" [disabled]="paginaActual === 1"
+          class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50">Anterior</button>
 
+  <span class="self-center text-gray-700">Página {{ paginaActual }} de {{ totalPaginasFiltradas }}</span>
 
-  <!-- PAGINACIÓN -->
-  <div class="flex justify-center mt-4 gap-4">
-    <button (click)="paginaAnterior()" [disabled]="paginaActual === 1"
-            class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50">Anterior</button>
-
-    <span class="self-center text-gray-700">Página {{ paginaActual }} de {{ totalPaginasFiltradas }}</span>
-
-    <button (click)="paginaSiguiente()" [disabled]="paginaActual === totalPaginasFiltradas"
-            class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50">Siguiente</button>
-  </div>
+  <button (click)="paginaSiguiente()" [disabled]="paginaActual === totalPaginasFiltradas"
+          class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50">Siguiente</button>
 </div>
+
+</div>
+
+
+<footer class="w-full bg-gray-800 text-white py-6" style="margin-top: 3.75rem;">
+
+  <div class="w-full mx-auto px-6 flex flex-col items-center md:flex-row justify-between">
+    <!-- Sección de enlaces -->
+    <div class="mb-4 md:mb-0">
+      <h3 class="text-lg font-semibold">Mythical Airline</h3>
+      <p class="text-gray-400 text-sm">Tu aerolínea gestionada desde la web.</p>
+    </div>
+
+    <!-- Enlaces rápidos -->
+    <div class="flex flex-col md:flex-row gap-4">
+      <a href="/" class="text-gray-300 hover:text-white text-sm">Inicio</a>
+      <a href="#" class="text-gray-300 hover:text-white text-sm">Sobre nosotros</a>
+      <a href="#" class="text-gray-300 hover:text-white text-sm">Servicios</a>
+      <a href="#" class="text-gray-300 hover:text-white text-sm">Contacto</a>
+    </div>
+
+    <!-- Información de redes sociales -->
+    <div class="flex gap-4 mt-4 md:mt-0">
+      <a href="#" class="text-gray-300 hover:text-white">
+        <i class="fab fa-facebook-f"></i> <!-- Ícono de Facebook -->
+      </a>
+      <a href="#" class="text-gray-300 hover:text-white">
+        <i class="fab fa-twitter"></i> <!-- Ícono de Twitter -->
+      </a>
+      <a href="#" class="text-gray-300 hover:text-white">
+        <i class="fab fa-instagram"></i> <!-- Ícono de Instagram -->
+      </a>
+    </div>
+  </div>
+
+  <div class="text-center mt-6 text-sm text-gray-400">
+    <p>&copy; 2025 Mythical Airline. Todos los derechos reservados.</p>
+  </div>
+</footer>
+
+

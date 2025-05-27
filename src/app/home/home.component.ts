@@ -4,12 +4,14 @@ import { CookieService } from 'ngx-cookie-service';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { UserService } from '../services/user.service';
-
+import { FormBuilder, FormGroup,Validators } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms'; // <-- AÑADE ESTO
+import { MatTooltipModule } from '@angular/material/tooltip'; // Importa el módulo de Tooltip
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css'],
-  imports: [CommonModule]
+  imports: [CommonModule,ReactiveFormsModule,MatTooltipModule]
 })
 export class HomeComponent implements OnInit {
   datosCargados=false;
@@ -18,14 +20,26 @@ export class HomeComponent implements OnInit {
   isLoading: boolean = true; // Controla el estado de carga
   menuOpen = false;
   menuAbierto = false;
-
+  busquedaForm: FormGroup;
+  errorMensaje: string = '';
   constructor(
     private http: HttpClient, 
     private cookieService: CookieService,
     private router: Router,
-    private userService: UserService
-  ) {}
+    private userService: UserService,
+    private fb: FormBuilder,
+  ) {
+    this.busquedaForm = this.fb.group({
+      paisOrigen: ['', Validators.required],
+      origen: ['', Validators.required],
+      paisDestino: ['', Validators.required],
+      destino: ['', Validators.required],
+      fechaSalida: ['', Validators.required],
+      pasajeros: [1, [Validators.required, Validators.min(1)]]
+    });
+  }
   dropdownOpen = false;
+
 
   toggleDropdown() {
     this.dropdownOpen = !this.dropdownOpen;
@@ -72,6 +86,19 @@ export class HomeComponent implements OnInit {
   {
     this.router.navigate(["/Aerolineas-home"]);
   }
+
+
+  enviar() {
+    if (this.busquedaForm.invalid) {
+      this.errorMensaje = 'Por favor completa todos los campos del formulario correctamente.';
+      return;
+    }
+  
+    this.errorMensaje = ''; // Limpia el error si todo está bien
+    const valores = this.busquedaForm.value;
+    this.router.navigate(['/buscar/vuelos'], { queryParams: valores });
+  }
+  
 
 
 }

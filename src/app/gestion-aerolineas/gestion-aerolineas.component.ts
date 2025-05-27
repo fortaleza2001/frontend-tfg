@@ -9,6 +9,8 @@ import { Router } from '@angular/router';
   imports:[CommonModule,FormsModule]
 })
 export class GestionAerolineasComponent {
+
+  
   constructor(private router: Router) {}
   airlines = [
     { id: 1, name: 'Aerolínea A', image: 'path/to/image1.jpg' },

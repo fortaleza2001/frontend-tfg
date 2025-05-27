@@ -33,6 +33,7 @@ export class SoporteComponent implements OnInit
   email: string = '';
   mensaje: string = '';
   mensajeExito: string = '';
+  error=false;
 
 
 
@@ -56,6 +57,7 @@ export class SoporteComponent implements OnInit
         this.isLoggedIn = false;
         this.isLoading = false;
         this.datosCargados=true;
+        this.error = true;
 
       }
     );
@@ -79,21 +81,31 @@ export class SoporteComponent implements OnInit
   {
     this.router.navigate(["/Aerolineas-home"]);
   }
+  volverAlHome() {
+    // Aquí puedes redirigir al home
+    this.router.navigate(["/home"]);
+  }
+
   enviarFormulario() {
     // Aquí puedes conectar con tu backend o enviar un correo
-
+    this.isLoading = false;
+    this.datosCargados=false;
     this.soporteService.postMandarSoporte(this.email , this.mensaje).subscribe(
       (response) => {
         console.log('Logout respuesta:', response);
         this.mensajeExito = 'Tu mensaje ha sido enviado. ¡Gracias por contactarnos!';
         this.email = '';
         this.mensaje = '';
+        this.isLoading = false;
+        this.datosCargados=true;
       },
       (error) => {
         console.error('Error al realizar el logout', error)
         this.mensajeExito = 'Tu mensaje ha sido enviado. ¡Gracias por contactarnos!';
         this.email = '';
         this.mensaje = '';
+        this.isLoading = false;
+        this.datosCargados=true;
       }
     );
 

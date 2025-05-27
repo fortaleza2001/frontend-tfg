@@ -55,6 +55,7 @@ export class AerolineasTrabajoComponent implements OnInit {
     // Cargar aerolíneas
     this.aerolineaService.getAerolineas().subscribe({
       next: (response) => {
+        console.log(response);
         const lista = response.contenido;
         for (let x = 0; x < lista.length; x++) {
           const nueva = {
@@ -98,6 +99,9 @@ export class AerolineasTrabajoComponent implements OnInit {
     });
   }
   
+
+
+
   logout(): void {
     this.userService.logout().subscribe(
       (response) => {

@@ -5,6 +5,8 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { UserService } from '../services/user.service';
 import { FormsModule } from '@angular/forms';
+import {VuelosService} from '../services/vuelos.service';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-flight-list',
@@ -18,19 +20,18 @@ export class FlightListComponent implements OnInit {
     private http: HttpClient, 
     private cookieService: CookieService,
     private router: Router,
-    private userService: UserService
+    private userService: UserService,
+    private vuelosService: VuelosService,
+    private route: ActivatedRoute
   ) {}
-  vuelos = Array.from({ length: 35 }).map((_, i) => ({
-    origen: `Ciudad ${i % 5 + 1}`,
-    destino: `Destino ${i % 7 + 1}`,
-    fechaSalida: new Date('2025-05-01T10:00:00'),
-    fechaLlegada: new Date('2025-05-01T18:00:00'),
-    tipos: [
-      { nombre: 'Económico', precio: 100 + i * 10, },
-      { nombre: 'Business', precio: 150 + i * 10 },
-      { nombre: 'Primera Clase', precio: 200 + i * 10 }
-    ]
-  }));
+  paisOrigen = '';
+  origen = '';
+  paisDestino = '';
+  destino = '';
+  fechaSalida = '';
+  pasajeros = 1;
+  vuelos :any = [];
+  
   
 
   // Filtros
@@ -49,10 +50,136 @@ export class FlightListComponent implements OnInit {
   menuOpen = false;
 
   cantidades: number[][] = [];
+  VuelosCargadas = false;
+   authCargado = false;
+camposInvalidos = false;
+  setearFiltro()
+  {
+        // Obtener los parámetros de la URL
+        this.route.queryParams.subscribe(params => {
+          this.paisOrigen = params['paisOrigen'] || '';
+          this.origen = params['origen'] || '';
+          this.paisDestino = params['paisDestino'] || '';
+          this.destino = params['destino'] || '';
+          this.fechaSalida = params['fechaSalida'] || '';
+          this.pasajeros = params['pasajeros'] || 1;
+          
+          // Aquí puedes hacer lo que desees con los parámetros obtenidos, como hacer una búsqueda
+          console.log(this.paisOrigen, this.origen, this.paisDestino, this.destino, this.fechaSalida, this.pasajeros);
+        });
+  }
 
+  enviar() {
+  if (
+    !this.paisOrigen ||
+    !this.origen ||
+    !this.paisDestino ||
+    !this.destino ||
+    !this.fechaSalida ||
+    !this.pasajeros
+  ) {
+    this.camposInvalidos = true;
+    return;
+  }
+
+  this.camposInvalidos = false;
+
+  const queryParams = {
+    paisOrigen: this.paisOrigen,
+    origen: this.origen,
+    paisDestino: this.paisDestino,
+    destino: this.destino,
+    fechaSalida: this.fechaSalida,
+    pasajeros: this.pasajeros
+  };
+
+  this.router.navigate(['/buscar/vuelos'], { queryParams });
+  // Si ya estás en la ruta, haz "navegación vacía" para forzar recarga
+  if (this.router.url.startsWith('/buscar/vuelos')) {
+    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+      this.router.navigate(['/buscar/vuelos'], { queryParams });
+    });
+  } else {
+    this.router.navigate(['/buscar/vuelos'], { queryParams });
+  }
+}
+
+  buscarvuelos()
+  {
+    const busqueda = {
+      paisOrigen: this.paisOrigen,
+      origen: this.origen,
+      paisDestino: this.paisDestino,
+      destino: this.destino,
+      fechaSalida: this.fechaSalida,
+      pasajeros: this.pasajeros
+    };
+
+    this.vuelosService.postBuscar(busqueda).subscribe(
+      (response) => {
+
+        console.log( response);
+        for( let i =0;i<response.coincidencias.length;i++)
+        {
+         
+
+          let title = "Vuelo " + response.salidas[i].municipality + " → " + response.llegadas[i].municipality;
+          let departureTime = response.coincidencias[i].fecha_salida;
+          let arrivalTime = response.coincidencias[i].fecha_llegada;
+          let departureAirport = "Aeropuerto " + response.salidas[i].name + " (" + response.salidas[i].iso_country + ")";
+          let arrivalAirport = "Aeropuerto " + response.llegadas[i].name + " (" + response.llegadas[i].iso_country + ")";
+          let description = response.coincidencias[i].description??"Disfruta de un vuelo directo con todas las comodidades desde "+response.salidas[i].municipality+" hasta la vibrante ciudad de "+response.llegadas[i].municipality +"."
+      
+          let origen = response.salidas[i].name + "(" + response.salidas[i].iso_country +")";
+          let destino = response.llegadas[i].name + "(" + response.llegadas[i].iso_country +")";
+          let tipos = [];
+          for (let j = 0; j < response.billetes.length; j++) {
+            let ticket: any = response.billetes[j];
+
+              if(ticket.id_vuelo==response.coincidencias[i].id)
+              {
+                tipos.push({
+                  nombre: ticket.tipo,
+                  precio: ticket.precio,
+                  disponibles:ticket.disponibles,
+              });
+              }
+              
+              
+          }
+          let vuelo = {
+            title:title,
+            departureTime:departureTime,
+            arrivalTime:arrivalTime,
+            departureAirport:departureAirport,
+            arrivalAirport:arrivalAirport,
+            description:description,
+            origen: origen,
+            destino: destino,
+            fechaSalida: new Date(response.coincidencias[i].fecha_salida),
+            fechaLlegada: new Date(response.coincidencias[i].fecha_llegada),
+            tipos: tipos,
+            id:response.coincidencias[i].id
+          };
+        
+          this.vuelos.push(vuelo);
+        }
+        this.inicializarCantidades();
+        this.VuelosCargadas = true;
+        this.revisarCargaCompleta();
+
+      },
+      (error) => {
+        console.error(error);
+        this.VuelosCargadas = true;
+        this.revisarCargaCompleta();
+       
+      }
+    );
+  } 
 
   inicializarCantidades() {
-    this.cantidades = this.vuelos.map(vuelo =>
+    this.cantidades = this.vuelos.map((vuelo:any) =>
       vuelo.tipos.map(() => 0)
     );
   }
@@ -68,27 +195,45 @@ export class FlightListComponent implements OnInit {
   }
   
   comprarVuelo(i: number) {
-    const vuelo = this.vuelosFiltradosPaginados[i];
-    const seleccion = vuelo.tipos.map((tipo, j) => ({
-      tipo: tipo.nombre,
-      cantidad: this.cantidades[i][j],
-      precio: tipo.precio
-    })).filter(t => t.cantidad > 0);
-  
-    console.log('Compra realizada para:', vuelo);
-    console.log('Detalles:', seleccion);
-  
-    // Aquí puedes abrir un modal, redirigir o procesar la compra
+    // Obtener el vuelo usando el índice 'i'
+    const vuelo = this.vuelos[i];
+    
+    // Acceder a los tipos de billetes para ese vuelo
+    const tiposBilletes = vuelo.tipos;
+    
+    // Imprimir los tipos de billetes y las cantidades en el log
+    console.log('Tipos de billetes para el vuelo:', vuelo.origen, '->', vuelo.destino);
+    
+    tiposBilletes.forEach((tipo: { nombre: string; precio: number }, index: number) => {
+      // Verificar que las cantidades estén disponibles para ese vuelo
+      const cantidadDisponible = this.cantidades[i] ? this.cantidades[i][index] : 0; // Obtener la cantidad disponible de ese tipo de billete
+      console.log(`Tipo de billete ${index + 1}: ${tipo.nombre} - Precio: ${tipo.precio} - Cantidad disponible: ${cantidadDisponible}`);
+    });
   }
+  
+  
+  
   
   dropdownOpen = false;
 
   toggleDropdown() {
     this.dropdownOpen = !this.dropdownOpen;
   }
+ revisarCargaCompleta = () => {
+    if (this.VuelosCargadas && this.authCargado) {
+      this.datosCargados = true;
+      this.isLoading = false;
+    }
+  };
 
   ngOnInit(): void {
-    this.inicializarCantidades();
+
+
+    
+
+    this.setearFiltro()
+    
+    this.buscarvuelos();
     this.userService.checkAuthentication().subscribe(
       (response) => {
         if (response.user) {
@@ -99,15 +244,16 @@ export class FlightListComponent implements OnInit {
           this.isLoggedIn = false;
           console.log('Usuario no autenticado');
         }
-        this.isLoading = false;
-        this.datosCargados=true;
+        this.authCargado = true;
+        this.revisarCargaCompleta();
+ 
 
       },
       (error) => {
         console.error('Error al comprobar la autenticación', error);
-        this.isLoggedIn = false;
-        this.isLoading = false;
-        this.datosCargados=true;
+        this.authCargado = true;
+        this.revisarCargaCompleta();
+
 
       }
     );
@@ -130,10 +276,10 @@ export class FlightListComponent implements OnInit {
   }
 
   get vuelosFiltrados() {
-    return this.vuelos.filter(v =>
+    return this.vuelos.filter((v:any) =>
       (!this.filtroOrigen || v.origen.toLowerCase().includes(this.filtroOrigen.toLowerCase())) &&
       (!this.filtroDestino || v.destino.toLowerCase().includes(this.filtroDestino.toLowerCase())) &&
-      (!this.filtroPrecio || Math.min(...v.tipos.map(t => t.precio)) <= this.filtroPrecio)
+      (!this.filtroPrecio || Math.min(...v.tipos.map((t:any) => t.precio)) <= this.filtroPrecio)
     );
   }
   
@@ -167,4 +313,81 @@ export class FlightListComponent implements OnInit {
       lista.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }
+
+  verVuelo(i: any) {
+    console.log("hola");
+  
+    let id = this.vuelos[i].id;
+    let currentRoute = this.router.url;
+  
+    this.router.navigate(['/vuelo', id], {
+      queryParams: {
+        previous: currentRoute
+      }
+    });
+  }
+
+   comprar(i:any) {
+
+    // Obtener el vuelo usando el índice 'i'
+    const vuelo = this.vuelos[i];
+    
+    // Acceder a los tipos de billetes para ese vuelo
+    const tiposBilletes = vuelo.tipos;
+    
+    // Imprimir los tipos de billetes y las cantidades en el log
+    console.log('Tipos de billetes para el vuelo:', vuelo.origen, '->', vuelo.destino);
+    
+    tiposBilletes.forEach((tipo: { nombre: string; precio: number }, index: number) => {
+      // Verificar que las cantidades estén disponibles para ese vuelo
+      const cantidadDisponible = this.cantidades[i] ? this.cantidades[i][index] : 0; // Obtener la cantidad disponible de ese tipo de billete
+      console.log(`Tipo de billete ${index + 1}: ${tipo.nombre} - Precio: ${tipo.precio} - Cantidad disponible: ${cantidadDisponible}`);
+    });
+
+
+
+    const ticketTypes = tiposBilletes
+  .map((tipo: { nombre: string; precio: number }, index: number) => {
+    const cantidadDisponible = this.cantidades[i] ? this.cantidades[i][index] : 0;
+
+    if (cantidadDisponible <= 0) return null;
+
+   
+    return {
+      type: tipo.nombre,
+      price: tipo.precio,
+      quantity: cantidadDisponible
+    };
+  })
+  .filter((item:any) => item !== null); // Eliminar los null (cantidad <= 0)
+
+
+  console.log(ticketTypes);
+    
+
+    const seleccionados = ticketTypes;
+  
+    if (seleccionados.length === 0) {
+      alert('Selecciona al menos un billete.');
+      return;
+    }
+    const currentRoute = this.router.url;
+    this.router.navigate(['/comprar/vuelo'], {
+      queryParams: {
+        flight: JSON.stringify({
+          id: vuelo.id,
+          title:vuelo.title ,
+          departureTime: vuelo.departureTime,
+          arrivalTime: vuelo.arrivalTime,
+          departureAirport: vuelo.departureAirport,
+          arrivalAirport: vuelo.arrivalAirport,
+          description: vuelo.description
+        }),
+        tickets: JSON.stringify(seleccionados),
+        previous: currentRoute
+
+      }
+    });
+  }
+  
 }

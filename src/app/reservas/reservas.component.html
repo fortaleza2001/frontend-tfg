@@ -83,79 +83,91 @@
  
 
 </nav>
+ <div *ngIf="error" class="flex flex-col items-center justify-center min-h-screen text-center px-4">
+    <h1 class="text-3xl font-bold text-red-600 mb-4">Error del servidor</h1>
+    <p class="text-lg text-gray-600 mb-6">Ha ocurrido un problema al cargar la información. Por favor, vuelva más tarde.</p>
+    <button 
+      class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-300"
+      (click)="volverAlHome()"
+    >
+      Volver al inicio
+    </button>
+  </div>
 
 
-<div class="min-h-screen bg-gray-100 p-8">
+<div *ngIf="!error" class="min-h-screen bg-gray-100 p-8 justify-center">
 
-    <!-- Título principal -->
-    <h1 class="text-4xl font-bold text-center text-blue-600 mb-10">Viajes Adquiridos</h1>
-  
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-  
-      <!-- Sección de Viajes Adquiridos -->
-      <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-md">
-        <h2 class="text-2xl font-semibold text-gray-800 mb-6">Mis Viajes</h2>
-  
-        <!-- Lista de viajes -->
-        <div class="space-y-6">
-          <div class="border p-4 rounded-lg flex flex-col md:flex-row md:items-center md:justify-between hover:shadow">
-            <div>
-              <p class="text-lg font-semibold text-gray-700">Madrid → París</p>
-              <p class="text-gray-500 text-sm">Fecha: 2025-05-10</p>
-            </div>
-            <div class="mt-4 md:mt-0">
-              <p class="text-green-600 font-semibold">Comprado</p>
-            </div>
-          </div>
-  
-          <div class="border p-4 rounded-lg flex flex-col md:flex-row md:items-center md:justify-between hover:shadow">
-            <div>
-              <p class="text-lg font-semibold text-gray-700">Barcelona → Londres</p>
-              <p class="text-gray-500 text-sm">Fecha: 2025-06-15</p>
-            </div>
-            <div class="mt-4 md:mt-0">
-              <p class="text-green-600 font-semibold">Comprado</p>
-            </div>
-          </div>
+  <!-- Título principal -->
+  <h1 class="text-4xl font-bold text-center text-blue-600 mb-10">Viajes Adquiridos</h1>
+
+  <!-- Barra de búsqueda -->
+ 
+
+  <!-- Lista de viajes -->
+  <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-md w-full max-w-3xl mx-auto">
+    <h2 class="text-2xl font-semibold text-gray-800 mb-6">Mis Viajes</h2>
+    <div class="mb-6">
+      <input type="text" placeholder="Buscar vuelo..." 
+        class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" 
+        [(ngModel)]="searchTerm" (input)="filterFlights()" name="searchTerm">
+    </div>
+    
+    <div *ngIf="filteredFlights.length === 0" class="text-center text-gray-600 py-8">
+        Este usuario no tiene ninguna reserva de vuelo.
+    </div>
+    <div *ngFor="let vuelo of filteredFlights" class="space-y-6">
+      <div class="border p-6 rounded-xl flex flex-col md:flex-row md:items-center md:justify-between hover:shadow-xl transition-shadow duration-300">
+        <div>
+          <p class="text-lg font-semibold text-gray-700">{{ vuelo.origen }} → {{ vuelo.destino }}</p>
+          <p class="text-gray-500 text-sm">Fecha: {{ vuelo.fecha }}</p>
+          <p class="text-gray-600 text-sm mt-2">Estado de vuelo: <span class="font-semibold" [ngClass]="getStatusClass(vuelo.estado)">{{ vuelo.estado }}</span></p>
         </div>
-      </div>
-  
-      <!-- Sección de Carrito -->
-      <div class="bg-white p-6 rounded-xl shadow-md">
-        <h2 class="text-2xl font-semibold text-gray-800 mb-6">Carrito</h2>
-  
-        <!-- Elementos en el carrito -->
-        <div class="space-y-4">
-          <div class="border p-4 rounded-lg flex items-center justify-between">
-            <div>
-              <p class="text-gray-700 font-semibold">Sevilla → Roma</p>
-              <p class="text-sm text-gray-500">2025-07-20</p>
-            </div>
-            <p class="font-semibold text-blue-600">$120.00</p>
-          </div>
-  
-          <div class="border p-4 rounded-lg flex items-center justify-between">
-            <div>
-              <p class="text-gray-700 font-semibold">Valencia → Berlín</p>
-              <p class="text-sm text-gray-500">2025-08-05</p>
-            </div>
-            <p class="font-semibold text-blue-600">$150.00</p>
-          </div>
-        </div>
-  
-        <!-- Total y botón -->
-        <div class="mt-6 border-t pt-4">
-          <div class="flex justify-between text-lg font-semibold mb-4">
-            <span>Total:</span>
-            <span class="text-blue-600">$270.00</span>
-          </div>
-  
-          <button class="w-full px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition">
-            Finalizar Compra
+        <div class="mt-4 md:mt-0 flex flex-col md:flex-row md:items-center gap-3">
+          <p class="text-green-600 font-semibold">Comprado</p>
+          <button (click)="verReserva(vuelo.id)" class="bg-blue-600 text-white px-6 h-[40px] rounded-full shadow-md hover:bg-blue-700 transition duration-300 flex items-center justify-center whitespace-nowrap text-sm">
+            Ver reserva
           </button>
+          
+          
         </div>
       </div>
-  
     </div>
   </div>
+</div>
+
+<footer class="w-full bg-gray-800 text-white py-6 mt-auto">
+  <div class="max-w-7xl mx-auto px-6 flex flex-col items-center md:flex-row justify-between">
+    <!-- Sección de enlaces -->
+    <div class="mb-4 md:mb-0">
+      <h3 class="text-lg font-semibold">Mythical Airline</h3>
+      <p class="text-gray-400 text-sm">Tu aerolínea gestionada desde la web.</p>
+    </div>
+
+    <!-- Enlaces rápidos -->
+    <div class="flex flex-col md:flex-row gap-4">
+      <a href="/" class="text-gray-300 hover:text-white text-sm">Inicio</a>
+      <a href="#" class="text-gray-300 hover:text-white text-sm">Sobre nosotros</a>
+      <a href="#" class="text-gray-300 hover:text-white text-sm">Servicios</a>
+      <a href="#" class="text-gray-300 hover:text-white text-sm">Contacto</a>
+    </div>
+
+    <!-- Información de redes sociales -->
+    <div class="flex gap-4 mt-4 md:mt-0">
+      <a href="#" class="text-gray-300 hover:text-white">
+        <i class="fab fa-facebook-f"></i> <!-- Ícono de Facebook -->
+      </a>
+      <a href="#" class="text-gray-300 hover:text-white">
+        <i class="fab fa-twitter"></i> <!-- Ícono de Twitter -->
+      </a>
+      <a href="#" class="text-gray-300 hover:text-white">
+        <i class="fab fa-instagram"></i> <!-- Ícono de Instagram -->
+      </a>
+    </div>
+  </div>
+
+  <div class="text-center mt-6 text-sm text-gray-400">
+    <p>&copy; 2025 Mythical Airline. Todos los derechos reservados.</p>
+  </div>
+</footer>
+
   

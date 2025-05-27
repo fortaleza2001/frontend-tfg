@@ -62,6 +62,7 @@
   <i class="bi bi-arrow-left"></i> Volver atrás
 </a>
       <h2 class="text-center">Iniciar Sesión</h2>
+      <p *ngIf="loginErrorMessage" class="text-center" style="color: red;">{{ loginErrorMessage }}</p>
       <form>
         <div class="mb-3">
           <label for="email" class="form-label">Correo Electrónico</label>

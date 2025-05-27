@@ -1,21 +1,32 @@
-import { Component } from '@angular/core';
+import { Component,OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import {AerolineaService} from '../services/aerolinea.service'
 import { Router } from '@angular/router';
+import { UserService } from '../services/user.service';
 @Component({
   selector: 'app-create-airline',
   templateUrl: './create-airline.component.html',
   styleUrls: ['./create-airline.component.css'],
   imports:[FormsModule,CommonModule]
 })
-export class CreateAirlineComponent {
+export class CreateAirlineComponent implements OnInit {
+
+  datosCargados=false;
+  isLoggedIn: boolean = false; // Cambia este valor según el estado de autenticación
+  username: string = '';
+  isLoading: boolean = true; // Controla el estado de carga
+  menuOpen = false;
+  menuAbierto = false;
+  errorMensaje: string = '';
 
   constructor(
     
     
     private router: Router,
-    private aerolinea_Service : AerolineaService
+    private aerolinea_Service : AerolineaService,
+    private userService: UserService,
+
     
   ) {}
 
@@ -50,6 +61,59 @@ errorCreacion: string | null = null;
     cvv:''
 
 
+  }
+  dropdownOpen = false;
+    error =false;
+
+
+  ngOnInit(): void {
+    this.userService.checkAuthentication().subscribe(
+      (response) => {
+        if (response.user) {
+          this.isLoggedIn = true;
+          this.username = response.user.email; // O usa otra propiedad del usuario que desees
+          console.log('Usuario autenticado:', response.user);
+        } else {
+          this.isLoggedIn = false;
+          console.log('Usuario no autenticado');
+        }
+        this.isLoading = false;
+        this.datosCargados=true;
+
+      },
+      (error) => {
+        console.error('Error al comprobar la autenticación', error);
+        this.isLoggedIn = false;
+        this.isLoading = false;
+        this.datosCargados=true;
+        this.error = true;
+
+      }
+    );
+  }
+ volverAlHome() {
+    // Aquí puedes redirigir al home
+    this.router.navigate(["/home"]);
+  }
+  toggleDropdown() {
+    this.dropdownOpen = !this.dropdownOpen;
+  }
+
+   logout(): void {
+    this.userService.logout().subscribe(
+      (response) => {
+        console.log('Logout respuesta:', response);
+        window.location.reload();
+      },
+      (error) => {
+        console.error('Error al realizar el logout', error);
+      }
+    );
+  }
+
+  irAerolineas()
+  {
+    this.router.navigate(["/Aerolineas-home"]);
   }
 
   crearAerolinea()

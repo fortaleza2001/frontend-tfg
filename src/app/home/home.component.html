@@ -62,10 +62,7 @@
     
         <!-- Menú desplegable -->
         <div *ngIf="dropdownOpen" class="absolute right-0 mt-2 w-48 bg-white text-gray-800 rounded-lg shadow-lg z-50">
-          <button  class="w-full text-left block px-4 py-2 hover:bg-gray-200">
-            Perfil
-          </button>
-          
+
           <button (click)="irAerolineas()"  class="w-full text-left block px-4 py-2 hover:bg-gray-200">
             Aerolineas
           </button>
@@ -113,37 +110,80 @@
     <p class="text-gray-600 mt-2 max-w-xl mx-auto">
       Encuentra tu vuelo ideal ingresando el origen, destino, fechas y cantidad de pasajeros. Ajusta los filtros y haz clic en buscar para ver las mejores opciones disponibles.
     </p>
+    <div *ngIf="errorMensaje" class="text-red-500 text-sm mb-4">
+      {{ errorMensaje }}
+    </div>
   </div>
 
-  <form>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <div>
-        <label for="origen" class="block text-gray-700">Origen</label>
-        <input type="text" id="origen" class="w-full mt-2 p-3 border border-gray-300 rounded-lg" placeholder="Ciudad de origen">
-      </div>
-      <div>
-        <label for="destino" class="block text-gray-700">Destino</label>
-        <input type="text" id="destino" class="w-full mt-2 p-3 border border-gray-300 rounded-lg" placeholder="Ciudad de destino">
-      </div>
-      <div>
-        <label for="fechaSalida" class="block text-gray-700">Fecha de Salida</label>
-        <input type="date" id="fechaSalida" class="w-full mt-2 p-3 border border-gray-300 rounded-lg">
-      </div>
-      <div>
-        <label for="fechaRegreso" class="block text-gray-700">Fecha de Regreso</label>
-        <input type="date" id="fechaRegreso" class="w-full mt-2 p-3 border border-gray-300 rounded-lg">
-      </div>
-      <div>
-        <label for="pasajeros" class="block text-gray-700">Pasajeros</label>
-        <input type="number" id="pasajeros" class="w-full mt-2 p-3 border border-gray-300 rounded-lg" min="1" value="1">
-      </div>
-      <div class="col-span-full">
-        <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-500 transition duration-300">
-          Buscar
-        </button>
-      </div>
+  <form [formGroup]="busquedaForm" (ngSubmit)="enviar()">
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+    <div>
+      <label for="paisOrigen" class="block text-gray-700">País de Origen</label>
+      <select formControlName="paisOrigen" id="paisOrigen" class="w-full mt-2 p-3 border border-gray-300 rounded-lg">
+        <option value="">Selecciona un país</option>
+        <option value="ES">España</option>
+        <option value="FR">Francia</option>
+        <option value="IT">Italia</option>
+        <option value="US">Estados Unidos</option>
+        <option value="MX">México</option>
+        <option value="AR">Argentina</option>
+      </select>
     </div>
-  </form>
+    <div>
+      <label for="origen" class="block text-gray-700">Ciudad de Origen</label>
+      <input formControlName="origen" type="text" id="origen" class="w-full mt-2 p-3 border border-gray-300 rounded-lg" placeholder="Ciudad de origen">
+    </div>
+
+    <div>
+      <label for="paisDestino" class="block text-gray-700">País de Destino</label>
+      <select formControlName="paisDestino" id="paisDestino" class="w-full mt-2 p-3 border border-gray-300 rounded-lg">
+        <option value="">Selecciona un país</option>
+        <option value="ES">España</option>
+        <option value="FR">Francia</option>
+        <option value="IT">Italia</option>
+        <option value="US">Estados Unidos</option>
+        <option value="MX">México</option>
+        <option value="AR">Argentina</option>
+      </select>
+    </div>
+    <div>
+      <label for="destino" class="block text-gray-700">Ciudad de Destino</label>
+      <input type="text" formControlName="destino" id="destino" class="w-full mt-2 p-3 border border-gray-300 rounded-lg" placeholder="Ciudad de destino">
+    </div>
+
+    <div>
+      <label for="fechaSalida" class="block text-gray-700">Fecha de Salida</label>
+      <input formControlName="fechaSalida" type="date" id="fechaSalida" class="w-full mt-2 p-3 border border-gray-300 rounded-lg">
+    </div>
+    <div>
+      <label for="pasajeros" class="block text-gray-700">Pasajeros</label>
+      <input type="number" id="pasajeros" class="w-full mt-2 p-3 border border-gray-300 rounded-lg" min="1" value="1">
+    </div>
+
+    <div class="col-span-full">
+<button
+  [disabled]="!isLoggedIn"
+  type="submit"
+  class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-500 transition duration-300"
+  [matTooltip]="!isLoggedIn ? 'Debes estar logueado para realizar esta acción' : null"
+  matTooltipPosition="above"
+  [ngClass]="{ 'cursor-not-allowed': !isLoggedIn }"
+>
+  Buscar
+</button>
+
+
+
+<!-- Nota que solo se muestra si el usuario no está logueado -->
+<div *ngIf="!isLoggedIn" class="text-red-500 text-sm mt-2">
+  Debes estar logueado para realizar esta acción.
+</div>
+    </div>
+  </div>
+</form>
+
+  
+  
 </div>
 
 
